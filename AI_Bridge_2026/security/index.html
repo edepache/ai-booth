@@ -1,0 +1,1029 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Cisco AI Bridge · Security Blueprint Kiosk</title>
+  <style>
+    :root{
+      --cisco-blue:#3070E7; --navy:#07182D; --dark:#0F1729; --teal:#16BDEB;
+      --green:#22C55E; --yellow:#F59E0B; --orange:#FF9000; --red:#EF4444;
+      --cyber:#00C8FF; --pink:#FF007F; --ink:#EAF6FF; --muted:#A8C4D8;
+      --glass:rgba(10,30,54,.62); --glass2:rgba(255,255,255,.08); --line:rgba(120,210,255,.22);
+      --shadow:0 24px 90px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.12);
+      font-family:'CiscoSans','Helvetica Neue',Helvetica,Arial,sans-serif;
+    }
+    *{box-sizing:border-box} html,body{height:100%;margin:0;overflow:hidden;background:#030B18;color:var(--ink);font-family:'CiscoSans','Helvetica Neue',Helvetica,Arial,sans-serif;touch-action:manipulation;user-select:none;-webkit-tap-highlight-color:transparent}
+    body:before{content:"";position:fixed;inset:-20%;background:radial-gradient(circle at 18% 20%,rgba(48,112,231,.42),transparent 27%),radial-gradient(circle at 80% 8%,rgba(0,200,255,.34),transparent 24%),radial-gradient(circle at 74% 76%,rgba(255,0,127,.18),transparent 28%),linear-gradient(135deg,#030813 0%,#07182D 45%,#081121 100%);z-index:-4;animation:mesh 18s ease-in-out infinite alternate}
+    body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:10;opacity:.15;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(circle at center,#000 20%,transparent 86%)}
+    @keyframes mesh{0%{filter:hue-rotate(0deg) saturate(1);transform:scale(1)}100%{filter:hue-rotate(12deg) saturate(1.25);transform:scale(1.08)}}
+    #network{position:fixed;inset:0;z-index:-3;opacity:.82} .orb{position:fixed;border-radius:999px;filter:blur(18px);opacity:.34;z-index:-2;animation:float 10s ease-in-out infinite alternate}.orb.a{width:290px;height:290px;background:var(--teal);left:5%;bottom:8%}.orb.b{width:220px;height:220px;background:var(--pink);right:9%;top:17%;animation-delay:-3s}.orb.c{width:180px;height:180px;background:var(--green);right:30%;bottom:7%;animation-delay:-6s}@keyframes float{to{transform:translate3d(28px,-42px,0) scale(1.18)}}
+    .app{position:relative;height:100%;display:flex;flex-direction:column;padding:34px clamp(28px,4vw,72px) 26px}.topbar{position:relative;z-index:20;display:flex;align-items:center;justify-content:space-between;min-height:74px;gap:20px}.brand{display:flex;align-items:center;gap:16px;font-weight:900;letter-spacing:.22em;color:#fff}.brand .word{font-size:clamp(18px,2vw,28px);color:#7DDCFF;text-shadow:0 0 24px rgba(22,189,235,.55)}.brand .stage{font-size:13px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}.lang{min-width:92px;height:64px;border:1px solid rgba(125,220,255,.32);background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.05));color:#fff;border-radius:22px;font-size:22px;font-weight:900;box-shadow:var(--shadow);cursor:pointer}.topbarRight{display:flex;gap:12px;align-items:center}.hub{min-height:64px;padding:0 20px;border:1px solid rgba(125,220,255,.32);background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));color:#DDF8FF;border-radius:20px;font-size:17px;font-weight:850;letter-spacing:.02em;cursor:pointer;box-shadow:var(--shadow);white-space:nowrap}.hub:hover{border-color:rgba(125,220,255,.6);background:linear-gradient(180deg,rgba(48,112,231,.28),rgba(22,189,235,.14))}.hub:active,.lang:active,.tap:active{transform:scale(.97)}
+    .progress{display:flex;align-items:center;gap:10px;min-height:34px;margin-top:-4px;color:#85B7D6;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.12em}.progress span{opacity:.52}.progress .on{opacity:1;color:#fff;text-shadow:0 0 14px rgba(0,200,255,.55)}.progress b{opacity:.3}.screen{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0;animation:screenIn .38s ease-out both}@keyframes screenIn{from{opacity:0;transform:translateY(18px) scale(.988);filter:blur(7px)}to{opacity:1;transform:none;filter:none}}
+    .footer{position:relative;z-index:2;text-align:center;color:rgba(201,229,245,.58);font-size:14px;letter-spacing:.08em;padding-top:12px}.kicker{color:#7DDCFF;font-size:clamp(18px,2vw,28px);font-weight:900;letter-spacing:.18em;text-transform:uppercase;text-shadow:0 0 26px rgba(22,189,235,.62)}.hero{align-items:flex-start;text-align:left;position:relative}.hero:before{content:"";position:absolute;width:min(58vw,820px);height:min(58vw,820px);right:-6vw;top:42%;transform:translateY(-50%);border-radius:50%;background:conic-gradient(from 40deg,transparent,rgba(22,189,235,.4),transparent,rgba(48,112,231,.5),transparent);filter:blur(.2px);opacity:.72;animation:spin 18s linear infinite}.hero:after{content:"AI\A SECURITY\A BRIDGE";white-space:pre;position:absolute;right:4vw;top:50%;transform:translateY(-50%) rotate(-7deg);font-size:clamp(56px,8vw,150px);line-height:.78;font-weight:950;letter-spacing:-.07em;color:transparent;-webkit-text-stroke:1px rgba(125,220,255,.18);opacity:.9}@keyframes spin{to{transform:translateY(-50%) rotate(360deg)}}
+    h1{font-size:clamp(74px,10.2vw,190px);line-height:.78;margin:18px 0 22px;letter-spacing:-.085em;font-weight:950;max-width:1050px;background:linear-gradient(90deg,#fff 0%,#BCEEFF 36%,#16BDEB 68%,#3070E7 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 28px 80px rgba(0,200,255,.16)}.subtitle{font-size:clamp(26px,3.2vw,56px);line-height:1.05;color:#D6F6FF;max-width:900px;margin:0 0 44px;font-weight:750;letter-spacing:-.03em}.ctaRow{display:flex;gap:18px;align-items:center;flex-wrap:wrap}.cta{min-height:84px;padding:0 38px;border:0;border-radius:28px;background:linear-gradient(100deg,var(--cisco-blue),var(--teal));color:#fff;font-size:clamp(24px,2.4vw,38px);font-weight:950;letter-spacing:-.02em;box-shadow:0 0 0 0 rgba(22,189,235,.65),0 22px 70px rgba(0,200,255,.35);animation:pulse 1.7s ease-in-out infinite;cursor:pointer}.ghost{min-height:72px;padding:0 26px;border-radius:24px;border:1px solid rgba(125,220,255,.34);background:rgba(255,255,255,.07);color:#DDF8FF;font-size:20px;font-weight:850;cursor:pointer}@keyframes pulse{50%{box-shadow:0 0 0 16px rgba(22,189,235,0),0 22px 84px rgba(0,200,255,.54);transform:translateY(-2px)}}
+    .titleBlock{margin-bottom:26px}.eyebrow{font-size:15px;text-transform:uppercase;letter-spacing:.22em;font-weight:900;color:#6DE8FF}.pageTitle{font-size:clamp(40px,5.2vw,86px);line-height:.92;margin:8px 0 0;font-weight:950;letter-spacing:-.055em}.grid{display:grid;gap:22px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.five{grid-template-columns:repeat(5,minmax(0,1fr))}.grid.cards{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-content:center}.card{position:relative;overflow:hidden;min-height:220px;border-radius:34px;border:1px solid rgba(157,222,255,.22);background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.045));box-shadow:var(--shadow);padding:28px;cursor:pointer;isolation:isolate;animation:cardIn .52s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*60ms)}.card:before{content:"";position:absolute;inset:-1px;background:radial-gradient(circle at var(--x,18%) var(--y,12%),color-mix(in srgb,var(--accent,#16BDEB) 55%,transparent),transparent 34%);opacity:.55;z-index:-1;transition:.35s}.card:after{content:"";position:absolute;inset:auto -20% -45% -20%;height:55%;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent,#16BDEB) 35%,transparent),transparent);filter:blur(28px);opacity:.36;transition:.35s}.card:hover,.card:focus-visible{transform:translateY(-8px);border-color:color-mix(in srgb,var(--accent,#16BDEB) 70%,white);box-shadow:0 34px 110px rgba(0,0,0,.5),0 0 42px color-mix(in srgb,var(--accent,#16BDEB) 32%,transparent)}.card:hover:before{opacity:.85}.card h2,.card h3{margin:0;color:#fff;letter-spacing:-.04em}.card h2{font-size:clamp(34px,4vw,68px);line-height:.92}.card h3{font-size:clamp(24px,2.1vw,38px);line-height:1.02}.card p{color:#C2D8E8;font-size:clamp(17px,1.3vw,23px);line-height:1.32;margin:16px 0 0}.card .icon{width:72px;height:72px;margin-bottom:20px;color:var(--accent);filter:drop-shadow(0 0 16px color-mix(in srgb,var(--accent) 62%,transparent))}.pathCard{min-height:390px;padding:42px}.pathCard .num{position:absolute;right:28px;bottom:18px;font-size:120px;font-weight:950;letter-spacing:-.12em;color:rgba(255,255,255,.055)}@keyframes cardIn{from{opacity:0;transform:translateY(26px) scale(.96)}to{opacity:1;transform:none}}
+    .industryCard{min-height:290px;padding:24px}.usecaseCard{min-height:230px}.result{justify-content:flex-start;overflow:auto;padding:8px 2px 12px;scrollbar-width:none}.result::-webkit-scrollbar{display:none}.resultHero{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:stretch;margin-bottom:20px}.resultHeader{border-radius:36px;border:1px solid rgba(157,222,255,.24);background:linear-gradient(145deg,rgba(48,112,231,.24),rgba(255,255,255,.06));box-shadow:var(--shadow);padding:30px}.resultHeader h2{font-size:clamp(38px,4.6vw,78px);line-height:.92;margin:0 0 16px;letter-spacing:-.06em}.resultHeader p{font-size:clamp(19px,1.45vw,25px);color:#CDEBFA;line-height:1.28;margin:0}.callout{border-radius:32px;padding:28px;border:1px solid rgba(239,68,68,.36);background:radial-gradient(circle at 12% 10%,rgba(239,68,68,.34),transparent 44%),rgba(255,255,255,.06);box-shadow:var(--shadow)}.sectionTitle{display:flex;align-items:center;gap:12px;font-size:clamp(20px,1.6vw,30px);font-weight:950;letter-spacing:-.03em;color:#fff;margin:0 0 16px}.sectionTitle:before{content:"";width:12px;height:32px;border-radius:20px;background:linear-gradient(var(--teal),var(--cisco-blue));box-shadow:0 0 22px rgba(22,189,235,.7)}.callout p,.reco p{font-size:clamp(19px,1.35vw,24px);line-height:1.3;color:#FFE8E8;margin:0}.resultGrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{border-radius:32px;border:1px solid rgba(157,222,255,.22);background:rgba(255,255,255,.065);box-shadow:var(--shadow);padding:24px}.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.chip{display:flex;gap:12px;align-items:flex-start;min-height:84px;border-radius:22px;padding:14px;border:1px solid color-mix(in srgb,var(--pc) 56%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--pc) 24%,transparent),rgba(255,255,255,.045))}.chip svg{flex:0 0 34px;width:34px;height:34px;color:var(--pc)}.chip b{display:block;font-size:17px;color:#fff}.chip small{display:block;color:#BBD2DF;font-size:12px;line-height:1.25;margin-top:4px}.badges{display:flex;flex-wrap:wrap;gap:10px}.badge{min-height:46px;display:inline-flex;align-items:center;border-radius:999px;padding:0 16px;border:1px solid rgba(125,220,255,.3);background:rgba(0,200,255,.08);color:#E9FBFF;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;font-weight:800}.reco{background:radial-gradient(circle at 95% 5%,rgba(34,197,94,.22),transparent 38%),rgba(255,255,255,.065)}.booths{grid-column:1/-1}.boothGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}.booth{position:relative;overflow:hidden;border-radius:30px;padding:24px;border:1px solid rgba(22,189,235,.42);background:linear-gradient(135deg,rgba(48,112,231,.28),rgba(0,200,255,.09));box-shadow:0 22px 70px rgba(0,0,0,.38),0 0 38px rgba(0,200,255,.14)}.booth:before{content:"VISIT";position:absolute;right:14px;top:8px;font-size:54px;font-weight:950;letter-spacing:-.08em;color:rgba(255,255,255,.06)}.booth h3{font-size:clamp(24px,2vw,36px);line-height:1;margin:0 0 12px;letter-spacing:-.04em}.booth p{color:#C8E7F5;font-size:18px;line-height:1.28;margin:0 0 16px}.actions{display:flex;gap:14px;margin-top:18px}.btn{min-height:64px;padding:0 24px;border-radius:22px;border:1px solid rgba(125,220,255,.3);background:rgba(255,255,255,.08);color:#fff;font-size:19px;font-weight:900;cursor:pointer}.btn.primary{background:linear-gradient(100deg,var(--cisco-blue),var(--teal));border:0}.overlay{position:fixed;inset:0;z-index:50;display:none;padding:36px clamp(24px,4vw,74px);background:rgba(3,8,19,.72);backdrop-filter:blur(18px)}.overlay.open{display:flex;animation:screenIn .28s ease both}.overlayBox{width:100%;height:100%;overflow:auto;border-radius:42px;border:1px solid rgba(157,222,255,.28);background:linear-gradient(145deg,rgba(7,24,45,.92),rgba(15,23,41,.88));box-shadow:0 34px 130px rgba(0,0,0,.66);padding:30px}.overlayTop{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:24px}.pillarGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.pillarCard{min-height:190px;border-radius:28px;padding:20px;border:1px solid color-mix(in srgb,var(--pc) 50%,transparent);background:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--pc) 32%,transparent),transparent 44%),rgba(255,255,255,.06)}.pillarCard svg{width:48px;height:48px;color:var(--pc)}.pillarCard h3{font-size:25px;margin:12px 0 8px}.pillarCard p{margin:0;color:#C7DCE9;line-height:1.3}.close{min-width:64px;height:64px;border-radius:22px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.09);color:#fff;font-size:34px;cursor:pointer}
+    .pillarsHint{margin:-6px 0 22px;max-width:920px;color:#B7D9EA;font-size:clamp(18px,1.4vw,25px);line-height:1.3}.pillarCard{cursor:pointer;transition:transform .26s ease,border-color .26s ease,box-shadow .26s ease,background .26s ease}.pillarCard:focus-visible{outline:3px solid var(--pc);outline-offset:4px}.pillarCard:hover,.pillarCard:focus-visible{transform:translateY(-8px);border-color:color-mix(in srgb,var(--pc) 74%,white);box-shadow:0 30px 96px rgba(0,0,0,.48),0 0 44px color-mix(in srgb,var(--pc) 36%,transparent)}.pillarCard:active{transform:scale(.985)}.pillarCard .chev{position:absolute;right:18px;bottom:16px;width:46px;height:46px;display:grid;place-items:center;border-radius:16px;background:color-mix(in srgb,var(--pc) 22%,rgba(255,255,255,.08));border:1px solid color-mix(in srgb,var(--pc) 55%,transparent);color:#fff;font-size:30px;font-weight:900;box-shadow:0 0 28px color-mix(in srgb,var(--pc) 30%,transparent)}.pillarDetail{--pc:#16BDEB;position:relative;animation:detailIn .28s cubic-bezier(.2,.8,.2,1) both}.pillarDetail:before{content:"";position:absolute;inset:-18px -18px auto -18px;height:170px;border-radius:36px;background:radial-gradient(circle at 14% 12%,color-mix(in srgb,var(--pc) 46%,transparent),transparent 46%),linear-gradient(90deg,color-mix(in srgb,var(--pc) 35%,transparent),transparent);filter:blur(20px);opacity:.78;pointer-events:none}.pillarDetailHead{position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;border-radius:34px;border:1px solid color-mix(in srgb,var(--pc) 54%,rgba(255,255,255,.18));background:linear-gradient(135deg,color-mix(in srgb,var(--pc) 23%,rgba(255,255,255,.07)),rgba(255,255,255,.055));box-shadow:var(--shadow),0 0 54px color-mix(in srgb,var(--pc) 20%,transparent);padding:26px 30px;margin-bottom:22px}.pillarDetailHead:before{content:"";position:absolute;inset:0 0 auto;height:6px;background:linear-gradient(90deg,var(--pc),transparent)}.pillarDetailHead .icon{width:78px;height:78px;color:var(--pc);filter:drop-shadow(0 0 24px color-mix(in srgb,var(--pc) 64%,transparent));margin:0}.pillarDetailHead h3{font-size:clamp(38px,4.6vw,82px);line-height:.92;margin:0;color:#fff;letter-spacing:-.06em}.pillarLead{position:relative;margin:0 0 24px;color:#D7F4FF;font-size:clamp(22px,1.75vw,32px);line-height:1.24;font-weight:750}.pillarProducts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}.pillarProduct{min-height:118px;border-radius:26px;padding:20px 22px;border:1px solid color-mix(in srgb,var(--pc) 42%,rgba(255,255,255,.16));background:linear-gradient(145deg,color-mix(in srgb,var(--pc) 15%,rgba(255,255,255,.07)),rgba(255,255,255,.045));box-shadow:0 18px 56px rgba(0,0,0,.24);animation:productIn .34s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*55ms)}.productName{display:inline-flex;align-items:center;min-height:40px;padding:8px 14px;margin-bottom:12px;border-radius:999px;background:color-mix(in srgb,var(--pc) 24%,rgba(255,255,255,.09));border:1px solid color-mix(in srgb,var(--pc) 58%,transparent);color:#fff;font-size:clamp(17px,1.25vw,23px);font-weight:950}.whyLabel{display:block;margin-bottom:4px;color:var(--pc);font-size:13px;font-weight:950;text-transform:uppercase;letter-spacing:.16em}.pillarProduct p{margin:0;color:#CDEBFA;font-size:clamp(17px,1.18vw,22px);line-height:1.34}.pillarBack{margin-bottom:18px}.pillarBack .btn{min-height:62px}@keyframes detailIn{from{opacity:0;transform:translateX(22px);filter:blur(7px)}to{opacity:1;transform:none;filter:none}}@keyframes productIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}@media (max-width:1100px){.grid.five{grid-template-columns:repeat(3,1fr)}.resultHero,.resultGrid{grid-template-columns:1fr}.hero:after{opacity:.34}.pathCard{min-height:300px}.pillarProducts{grid-template-columns:1fr}}@media (max-width:760px){.app{padding:20px 16px}.grid.two,.grid.five,.grid.cards{grid-template-columns:1fr}.hero:before,.hero:after{display:none}h1{font-size:70px}.topbar{min-height:58px}.lang{height:56px}.card{min-height:190px}.footer{font-size:11px}.progress{font-size:11px;gap:6px}.resultHeader h2{font-size:44px}.pillarDetailHead{grid-template-columns:1fr}.pillarProducts{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <canvas id="network" aria-hidden="true"></canvas><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div>
+  <main class="app" id="app"></main>
+  <div class="overlay" id="pillarOverlay" aria-hidden="true"></div>
+  <script>
+const BOOTH_DATA = {
+  meta: {
+    event: "Cisco AI Bridge · Cisco Connect Cancún 2026",
+    stage: "Stage 3 — Storytelling",
+    blueprint: { es: "Blueprint de Seguridad", en: "Security Blueprint" },
+    version: "1.0",
+  },
+
+  /* -------------------------------------------------------------------
+     10 SECURITY PILLARS (Dani's blueprint taxonomy from Slide 5)
+     Names in ES/EN; the pillar keyword stays recognizable in English.
+     ------------------------------------------------------------------- */
+  pillars: {
+    identity: {
+      key: "Identity",
+      name: { es: "Identidad", en: "Identity" },
+      short: {
+        es: "Dar identidad a usuarios, dispositivos y agentes de IA — con un dueño humano responsable.",
+        en: "Give identity to users, devices and AI agents — each with an accountable human owner.",
+      },
+      color: "#3070E7", icon: "id",
+      products: [
+        { name: "Duo", why: {
+          es: "Asigna identidad y MFA a usuarios, dispositivos y agentes de IA — con un dueño humano responsable de su comportamiento.",
+          en: "Assigns identity and MFA to users, devices and AI agents — each with an accountable human owner." } },
+        { name: "Cisco Identity Intelligence", why: {
+          es: "Correlaciona el riesgo de identidad entre Okta, Entra, AD, Duo e ISE, incluyendo identidades no humanas y agentes.",
+          en: "Correlates identity risk across Okta, Entra, AD, Duo and ISE — including non-human identities and agents." } },
+        { name: "Cisco ISE", why: {
+          es: "Da identidad al acceso de red y es la base de la segmentación basada en identidad (TrustSec).",
+          en: "Provides network-access identity and is the foundation for identity-based segmentation (TrustSec)." } },
+        { name: "Cisco Secure Access — Zero Trust for Agentic AI", why: {
+          es: "Descubre agentes de IA y les emite tokens de corta vida con mínimo privilegio.",
+          en: "Discovers AI agents and issues them short-lived, least-privilege tokens." } },
+      ],
+    },
+    sse: {
+      key: "SSE / ZTNA",
+      name: { es: "SSE / Zero Trust Access", en: "SSE / Zero Trust Access" },
+      short: {
+        es: "Acceso Zero Trust y segmentación de tráfico hacia apps e IA, sin VPN tradicional.",
+        en: "Zero Trust access and traffic segmentation to apps and AI, without legacy VPN.",
+      },
+      color: "#16BDEB", icon: "shield-lock",
+      products: [
+        { name: "Cisco Secure Access", why: {
+          es: "SSE unificado (ZTNA, SWG, CASB, DNS, DLP, AI Access) con una sola política de acceso; FedRAMP authorized.",
+          en: "Unified SSE (ZTNA, SWG, CASB, DNS, DLP, AI Access) with a single access policy; FedRAMP authorized." } },
+        { name: "Duo", why: {
+          es: "Verifica la confianza del usuario y del dispositivo antes de conceder acceso — el primer principio de Zero Trust.",
+          en: "Verifies user and device trust before granting access — the first Zero Trust principle." } },
+      ],
+    },
+    segmentation: {
+      key: "Segmentation",
+      name: { es: "Segmentación", en: "Segmentation" },
+      short: {
+        es: "Convertir cada punto de la red en punto de inspección y política; aislar cargas de IA/OT.",
+        en: "Turn every network point into an inspection & policy point; isolate AI/OT workloads.",
+      },
+      color: "#22C55E", icon: "grid",
+      products: [
+        { name: "Cisco Hypershield", why: {
+          es: "Convierte cada switch, servidor y carga en punto de inspección y enforcement, con segmentación autónoma y dual dataplane.",
+          en: "Turns every switch, server and workload into an inspection & enforcement point, with autonomous segmentation and a dual dataplane." } },
+        { name: "Cisco Secure Workload", why: {
+          es: "Micro-segmentación que descubre la política del tráfico real en data center, nube y Kubernetes.",
+          en: "Micro-segmentation that discovers policy from real traffic across data center, cloud and Kubernetes." } },
+        { name: "Cisco ISE", why: {
+          es: "Segmentación macro basada en identidad (TrustSec/SGT) que alimenta a Hypershield y ACI.",
+          en: "Identity-based macro-segmentation (TrustSec/SGT) that feeds Hypershield and ACI." } },
+        { name: "Cisco ACI / Nexus Dashboard", why: {
+          es: "Segmentación intent-based a escala de fabric del data center.",
+          en: "Intent-based segmentation at data-center fabric scale." } },
+        { name: "Isovalent (Cilium)", why: {
+          es: "Segmentación a nivel de kernel con eBPF para cargas de IA cloud-native.",
+          en: "Kernel-level eBPF segmentation for cloud-native AI workloads." } },
+      ],
+    },
+    aishadow: {
+      key: "AI Shadow",
+      name: { es: "AI Shadow", en: "Shadow AI" },
+      short: {
+        es: "Descubrir y controlar el uso no autorizado de apps de IA y la fuga de datos hacia LLMs públicos.",
+        en: "Discover and control unsanctioned AI app usage and data leakage to public LLMs.",
+      },
+      color: "#F59E0B", icon: "eye",
+      products: [
+        { name: "Cisco AI Defense — AI Access & AI Cloud Visibility", why: {
+          es: "Descubre modelos, apps y datos de IA — sancionados y en la sombra — embebido en la red, sin agentes ni librerías.",
+          en: "Discovers AI models, apps and data — sanctioned and shadow — network-embedded, with no agents or libraries." } },
+        { name: "Cisco Secure Access — AI Access", why: {
+          es: "Da visibilidad y DLP al uso de apps GenAI de terceros desde el plano de control SSE.",
+          en: "Gives visibility and DLP over third-party GenAI app usage from the SSE control plane." } },
+      ],
+    },
+    soc: {
+      key: "SOC / SecOps",
+      name: { es: "SOC / SecOps", en: "SOC / SecOps" },
+      short: {
+        es: "Detección y respuesta con IA a través de red, endpoint, nube e identidad.",
+        en: "AI-driven detection & response across network, endpoint, cloud and identity.",
+      },
+      color: "#8B5CF6", icon: "radar",
+      products: [
+        { name: "Cisco XDR", why: {
+          es: "Detección y respuesta multi-dominio (red, endpoint, nube, identidad) con investigación de IA agéntica y recuperación ante ransomware.",
+          en: "Cross-domain detection & response (network, endpoint, cloud, identity) with agentic-AI investigation and ransomware recovery." } },
+        { name: "Splunk Enterprise Security", why: {
+          es: "SIEM con AI Assistant que escribe y explica SPL y resume investigaciones para el SOC.",
+          en: "SIEM with an AI Assistant that writes/explains SPL and summarizes investigations for the SOC." } },
+        { name: "Cisco AI Assistant for Security", why: {
+          es: "Copiloto que genera políticas en lenguaje natural y resume incidentes a través de Firewall, XDR y Secure Access.",
+          en: "Copilot that generates natural-language policy and summarizes incidents across Firewall, XDR and Secure Access." } },
+      ],
+    },
+    perimeter: {
+      key: "Perimeter",
+      name: { es: "Perímetro", en: "Perimeter" },
+      short: {
+        es: "Firewalls de alto desempeño listos para tareas de IA, con visibilidad de tráfico cifrado.",
+        en: "High-performance firewalls ready for AI tasks, with encrypted-traffic visibility.",
+      },
+      color: "#FF9000", icon: "brick-wall",
+      products: [
+        { name: "Cisco Secure Firewall (Snort 3, EVE)", why: {
+          es: "NGFW de alto desempeño listo para tareas de IA; el Encrypted Visibility Engine clasifica tráfico cifrado sin descifrarlo.",
+          en: "High-performance NGFW ready for AI tasks; the Encrypted Visibility Engine classifies encrypted traffic without decryption." } },
+        { name: "Cisco Multicloud Defense", why: {
+          es: "Extiende el perímetro a AWS, Azure, GCP y Oracle (ingress/egress/east-west) desde un plano de control SaaS.",
+          en: "Extends the perimeter to AWS, Azure, GCP and Oracle (ingress/egress/east-west) from one SaaS control plane." } },
+      ],
+    },
+    guardrails: {
+      key: "Guardrails",
+      name: { es: "Guardrails", en: "Guardrails" },
+      short: {
+        es: "Inspección en tiempo real de prompts/respuestas: prompt injection, jailbreak, fuga de PII.",
+        en: "Real-time prompt/response inspection: prompt injection, jailbreak, PII leakage.",
+      },
+      color: "#EF4444", icon: "guard",
+      products: [
+        { name: "Cisco AI Defense — Runtime Protection", why: {
+          es: "Inspecciona prompts y respuestas en tiempo real: bloquea prompt injection, jailbreak, model DoS y fuga de PII — sin SDK, alineado a OWASP LLM Top 10 y MITRE ATLAS.",
+          en: "Inspects prompts and responses in real time: blocks prompt injection, jailbreak, model DoS and PII leakage — no SDK, aligned to OWASP LLM Top 10 and MITRE ATLAS." } },
+      ],
+    },
+    codeguard: {
+      key: "CodeGuard",
+      name: { es: "CodeGuard", en: "CodeGuard" },
+      short: {
+        es: "Seguridad del código y apps generadas con/para IA — de código a nube, cadena de suministro de software.",
+        en: "Security for AI-generated/AI apps and their code — code-to-cloud software supply chain.",
+      },
+      color: "#00C8FF", icon: "code",
+      products: [
+        { name: "Cisco AI Defense — Model & Application Validation", why: {
+          es: "Red-teaming algorítmico que prueba modelos y apps de IA en busca de vulnerabilidades de seguridad y safety (IP de Robust Intelligence).",
+          en: "Algorithmic red-teaming that tests AI models and apps for security and safety vulnerabilities (Robust Intelligence IP)." } },
+        { name: "Panoptica (Outshift)", why: {
+          es: "Seguridad cloud-native de código a nube: APIs, CI/CD y cadena de suministro de software de las apps que ejecutan la IA.",
+          en: "Cloud-native code-to-cloud security: APIs, CI/CD and software supply chain of the apps that run the AI." } },
+      ],
+    },
+    opensource: {
+      key: "Open Source",
+      name: { es: "Open Source", en: "Open Source" },
+      short: {
+        es: "Cimientos abiertos: eBPF (Cilium/Tetragon), Snort, ClamAV y agentes interoperables (AGNTCY).",
+        en: "Open foundations: eBPF (Cilium/Tetragon), Snort, ClamAV and interoperable agents (AGNTCY).",
+      },
+      color: "#94A3B8", icon: "branch",
+      products: [
+        { name: "Cilium / Tetragon (Isovalent)", why: {
+          es: "Base eBPF abierta para redes, seguridad y observabilidad de cargas de IA en Kubernetes.",
+          en: "Open eBPF foundation for AI networking, security and observability on Kubernetes." } },
+        { name: "Snort 3", why: {
+          es: "Motor IPS open source embebido en Cisco Secure Firewall.",
+          en: "Open-source IPS engine embedded in Cisco Secure Firewall." } },
+        { name: "ClamAV", why: {
+          es: "Motor antimalware open source mantenido por Cisco.",
+          en: "Open-source antimalware engine stewarded by Cisco." } },
+        { name: "OpenTelemetry", why: {
+          es: "Estándar abierto de telemetría; Splunk Observability es OTel-native.",
+          en: "Open telemetry standard; Splunk Observability is OTel-native." } },
+        { name: "AGNTCY — Internet of Agents", why: {
+          es: "Framework abierto de Cisco Outshift para la interoperabilidad segura entre agentes de IA.",
+          en: "Cisco Outshift open framework for secure AI-agent interoperability." } },
+      ],
+    },
+    intelligence: {
+      key: "Threat Intelligence",
+      name: { es: "Inteligencia de Amenazas", en: "Threat Intelligence" },
+      short: {
+        es: "Talos: inteligencia de amenazas que alimenta todo el portafolio en tiempo real.",
+        en: "Talos: threat intelligence feeding the entire portfolio in real time.",
+      },
+      color: "#FF007F", icon: "globe",
+      products: [
+        { name: "Cisco Talos", why: {
+          es: "Una de las mayores organizaciones de inteligencia de amenazas: billones de eventos diarios que alimentan Firewall, XDR, Secure Access, Email y AI Defense en tiempo real.",
+          en: "One of the largest threat-intelligence orgs: trillions of daily events feeding Firewall, XDR, Secure Access, Email and AI Defense in real time." } },
+        { name: "Splunk Threat Intelligence Management", why: {
+          es: "Enriquece las detecciones de Splunk ES con inteligencia externa correlacionada.",
+          en: "Enriches Splunk ES detections with correlated external intelligence." } },
+      ],
+    },
+  },
+
+  /* -------------------------------------------------------------------
+     SHOWCASE BOOTHS (security-relevant demo stations)
+     ------------------------------------------------------------------- */
+  booths: {
+    // ------- Networking (Juan Cervantes) -------
+    nw_unified: {
+      campus: "Networking",
+      name: { es: "Networking · Unified Secure Networking", en: "Networking · Unified Secure Networking" },
+      focus: { es: "Red segura unificada: identidad, política y visibilidad como una sola capa.",
+               en: "Unified secure networking: identity, policy and visibility as one layer." },
+      products: [],
+    },
+    nw_smart_access: {
+      campus: "Networking",
+      name: { es: "Networking · Smart Access", en: "Networking · Smart Access" },
+      focus: { es: "Acceso basado en identidad (802.1X, TrustSec) en campus y sucursal.",
+               en: "Identity-based access (802.1X, TrustSec) across campus and branch." },
+      products: [],
+    },
+    nw_secure_wan: {
+      campus: "Networking",
+      name: { es: "Networking · Secure WAN", en: "Networking · Secure WAN" },
+      focus: { es: "SD-WAN + SASE con Zero Trust integrado desde el borde.",
+               en: "SD-WAN + SASE with Zero Trust integrated from the edge." },
+      products: [],
+    },
+    nw_smart_retail: {
+      campus: "Networking",
+      name: { es: "Networking · Smart Retail", en: "Networking · Smart Retail" },
+      focus: { es: "Conectividad y visibilidad para el piso de venta y el POS.",
+               en: "Connectivity and visibility for the sales floor and POS." },
+      products: [],
+    },
+    nw_smart_spaces: {
+      campus: "Networking",
+      name: { es: "Networking · Smart Spaces", en: "Networking · Smart Spaces" },
+      focus: { es: "Ocupación, calidad del aire y experiencia con Wi-Fi como sensor.",
+               en: "Occupancy, air quality and experience with Wi-Fi as a sensor." },
+      products: [],
+    },
+
+    // ------- Security (Flavio Correa) -------
+    sec_zta: {
+      campus: "Security",
+      name: { es: "Security · Zero Trust Access", en: "Security · Zero Trust Access" },
+      focus: { es: "ZTNA con acceso basado en identidad para usuarios, dispositivos y agentes.",
+               en: "ZTNA with identity-based access for users, devices and agents." },
+      products: [],
+    },
+    sec_hmf: {
+      campus: "Security",
+      name: { es: "Security · Hybrid Mesh Firewall", en: "Security · Hybrid Mesh Firewall" },
+      focus: { es: "Perímetro consistente en Data Center, nube y sucursal.",
+               en: "Consistent perimeter across Data Center, cloud and branch." },
+      products: [],
+    },
+    sec_ifs: {
+      campus: "Security",
+      name: { es: "Security · Identity First Security", en: "Security · Identity First Security" },
+      focus: { es: "Duo, ISE e Identity Intelligence — identidad como primer control.",
+               en: "Duo, ISE and Identity Intelligence — identity as the first control." },
+      products: [],
+    },
+    sec_scc: {
+      campus: "Security",
+      name: { es: "Security · Security Cloud Control", en: "Security · Security Cloud Control" },
+      focus: { es: "Plano único de gestión y política para todo el portafolio de seguridad.",
+               en: "Single management and policy plane for the whole security portfolio." },
+      products: [],
+    },
+    sec_ai: {
+      campus: "Security",
+      name: { es: "Security · AI Security", en: "Security · AI Security" },
+      focus: { es: "Cisco AI Defense — guardrails, Shadow AI y validación de modelos.",
+               en: "Cisco AI Defense — guardrails, Shadow AI and model validation." },
+      products: [],
+    },
+    sec_aiwork: {
+      campus: "Security",
+      name: { es: "Security · Security & Observability for AI Workloads", en: "Security · Security & Observability for AI Workloads" },
+      focus: { es: "Seguridad y observabilidad para cargas de IA de punta a punta.",
+               en: "End-to-end security and observability for AI workloads." },
+      products: [],
+    },
+
+    // ------- CAI · Cloud & AI Infrastructure (Carlos Rubio) -------
+    cai_edge_holo: {
+      campus: "CAI",
+      name: { es: "CAI · Unified Edge - Holograma", en: "CAI · Unified Edge - Holograma" },
+      focus: { es: "Unified Edge en vivo — edge computing convergente demostrado con holograma.",
+               en: "Unified Edge live — converged edge computing demonstrated with a hologram." },
+      products: [],
+    },
+    cai_edge: {
+      campus: "CAI",
+      name: { es: "CAI · Unify edge", en: "CAI · Unify edge" },
+      focus: { es: "Cómputo, red y datos como una sola plataforma en el borde.",
+               en: "Compute, network and data as a single platform at the edge." },
+      products: [],
+    },
+    cai_ndb: {
+      campus: "CAI",
+      name: { es: "CAI · Data Center Networking with Nexus Dashboard", en: "CAI · Data Center Networking with Nexus Dashboard" },
+      focus: { es: "Telemetría y assurance del Data Center (ACI / NX-OS).",
+               en: "Data Center telemetry and assurance (ACI / NX-OS)." },
+      products: [],
+    },
+    cai_hyperfabric: {
+      campus: "CAI",
+      name: { es: "CAI · Scaling multi-agent systems / Hyperfabric / Secure IA Factory", en: "CAI · Scaling multi-agent systems / Hyperfabric / Secure IA Factory" },
+      focus: { es: "Cisco Secure AI Factory (con NVIDIA) para sistemas multi-agente a escala.",
+               en: "Cisco Secure AI Factory (with NVIDIA) for multi-agent systems at scale." },
+      products: [],
+    },
+    cai_stack: {
+      campus: "CAI",
+      name: { es: "CAI · Stack Automation", en: "CAI · Stack Automation" },
+      focus: { es: "Infraestructura como código con Intersight y automatización full-stack.",
+               en: "Infrastructure as code with Intersight and full-stack automation." },
+      products: [],
+    },
+    cai_smartsw: {
+      campus: "CAI",
+      name: { es: "CAI · Smart switch", en: "CAI · Smart switch" },
+      focus: { es: "Cisco Smart Switch (N9300): enforcement y observabilidad en el silicio.",
+               en: "Cisco Smart Switch (N9300): silicon-embedded enforcement and observability." },
+      products: [],
+    },
+    cai_compute: {
+      campus: "CAI",
+      name: { es: "CAI · Compute / Intersight /unify edge / hiperconvergencia /AI", en: "CAI · Compute / Intersight /unify edge / hiperconvergencia /AI" },
+      focus: { es: "Cómputo GPU-ready, hiperconvergencia y operación como código.",
+               en: "GPU-ready compute, hyperconvergence and management as code." },
+      products: [],
+    },
+
+    // ------- Collaboration (Arturo Prieto & Vero Diaz) -------
+    col_exec: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Executive Room (Mezzanine)", en: "Collaboration · Executive Room (Mezzanine)" },
+      focus: { es: "Sala ejecutiva Webex: reuniones inmersivas de alto nivel.",
+               en: "Webex executive room: high-end immersive meetings." },
+      products: [],
+    },
+    col_connect: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Connect Room", en: "Collaboration · Connect Room" },
+      focus: { es: "Colaboración híbrida con Webex Rooms.",
+               en: "Hybrid collaboration with Webex Rooms." },
+      products: [],
+    },
+    col_interop: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Interoperability", en: "Collaboration · Interoperability" },
+      focus: { es: "Interoperabilidad Webex con MS Teams, Zoom y salas de terceros.",
+               en: "Webex interop with MS Teams, Zoom and third-party rooms." },
+      products: [],
+    },
+    col_contact: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Webex Contact Center", en: "Collaboration · Webex Contact Center" },
+      focus: { es: "Contact center en la nube con IA integrada.",
+               en: "Cloud contact center with integrated AI." },
+      products: [],
+    },
+    col_calling: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Webex Calling & Webex Suite", en: "Collaboration · Webex Calling & Webex Suite" },
+      focus: { es: "Telefonía y colaboración en la nube.",
+               en: "Cloud telephony and collaboration." },
+      products: [],
+    },
+    col_workspaces: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Smart Workspaces", en: "Collaboration · Smart Workspaces" },
+      focus: { es: "Espacios de trabajo inteligentes con Webex y Meraki.",
+               en: "Intelligent workspaces with Webex and Meraki." },
+      products: [],
+    },
+
+    // ------- ThousandEyes (Carlos Venegas) -------
+    te_agentic: {
+      campus: "ThousandEyes",
+      name: { es: "ThousandEyes · ThousandEyes Agentic Operations", en: "ThousandEyes · ThousandEyes Agentic Operations" },
+      focus: { es: "Agentes de IA para observabilidad de red autónoma.",
+               en: "AI agents for autonomous network observability." },
+      products: [],
+    },
+    te_insights: {
+      campus: "ThousandEyes",
+      name: { es: "ThousandEyes · Traffic Insights, Cloud Insights", en: "ThousandEyes · Traffic Insights, Cloud Insights" },
+      focus: { es: "Visibilidad de flujos y de nube pública de punta a punta.",
+               en: "End-to-end flow and public-cloud visibility." },
+      products: [],
+    },
+    te_assurance: {
+      campus: "ThousandEyes",
+      name: { es: "ThousandEyes · Cisco Architectures + Network Assurance", en: "ThousandEyes · Cisco Architectures + Network Assurance" },
+      focus: { es: "Assurance de red integral sobre las arquitecturas Cisco.",
+               en: "End-to-end network assurance over Cisco architectures." },
+      products: [],
+    },
+
+    // ------- Observability (Cleber) -------
+    obs_agent: {
+      campus: "Observability",
+      name: { es: "Observability · Agent Observability", en: "Observability · Agent Observability" },
+      focus: { es: "Monitoreo del comportamiento y desempeño de agentes de IA.",
+               en: "Monitoring behavior and performance of AI agents." },
+      products: [],
+    },
+    obs_itsi: {
+      campus: "Observability",
+      name: { es: "Observability · Splunk ITSI", en: "Observability · Splunk ITSI" },
+      focus: { es: "Splunk IT Service Intelligence: AIOps y salud de servicios.",
+               en: "Splunk IT Service Intelligence: AIOps and service health." },
+      products: [],
+    },
+    obs_cloud: {
+      campus: "Observability",
+      name: { es: "Observability · Splunk Observability Cloud", en: "Observability · Splunk Observability Cloud" },
+      focus: { es: "APM, trazas distribuidas y métricas de Kubernetes OTel-native.",
+               en: "APM, distributed traces and Kubernetes metrics, OTel-native." },
+      products: [],
+    },
+    obs_datafabric: {
+      campus: "Observability",
+      name: { es: "Observability · Cisco Data Fabric", en: "Observability · Cisco Data Fabric" },
+      focus: { es: "Capa unificada de datos para observabilidad full-stack.",
+               en: "Unified data layer for full-stack observability." },
+      products: [],
+    },
+
+    // ------- Service Providers (Christian Calixto) -------
+    sp_agile: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · End to End Agile Services Networking", en: "Service Providers · End to End Agile Services Networking" },
+      focus: { es: "Agile Services Networking de punta a punta para operadores.",
+               en: "End-to-end Agile Services Networking for operators." },
+      products: [],
+    },
+    sp_siliconone: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · Sillicon One Platforms and RON transceivers", en: "Service Providers · Sillicon One Platforms and RON transceivers" },
+      focus: { es: "Silicon One y transceivers RON: escala para IA y backbone.",
+               en: "Silicon One and RON transceivers: AI and backbone scale." },
+      products: [],
+    },
+    sp_ai_conn: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · Scale Connectivity for AI: Cisco Routed Networking and SRv6", en: "Service Providers · Scale Connectivity for AI: Cisco Routed Networking and SRv6" },
+      focus: { es: "Cisco Routed Networking y SRv6 para conectividad de IA a escala.",
+               en: "Cisco Routed Networking and SRv6 for AI connectivity at scale." },
+      products: [],
+    },
+    sp_agentic: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · Service Providers Agentic Operations", en: "Service Providers · Service Providers Agentic Operations" },
+      focus: { es: "Operación autónoma con agentes de IA para el operador.",
+               en: "Autonomous operations with AI agents for operators." },
+      products: [],
+    },
+    sp_security: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · Cisco Service Provider Security", en: "Service Providers · Cisco Service Provider Security" },
+      focus: { es: "Protección de la infraestructura del operador.",
+               en: "Operator infrastructure protection." },
+      products: [],
+    },
+
+    // ------- Industrial IOT (Fayce) -------
+    iot_cybervision: {
+      campus: "Industrial IOT",
+      name: { es: "Industrial IOT · Cisco Cyber Vision - Industrial Segmentation & Remote Access", en: "Industrial IOT · Cisco Cyber Vision - Industrial Segmentation & Remote Access" },
+      focus: { es: "Cisco Cyber Vision: segmentación industrial y acceso remoto seguro.",
+               en: "Cisco Cyber Vision: industrial segmentation and secure remote access." },
+      products: [],
+    },
+    iot_ie: {
+      campus: "Industrial IOT",
+      name: { es: "Industrial IOT · Cisco Industrial Switches on Meraki Dashboard", en: "Industrial IOT · Cisco Industrial Switches on Meraki Dashboard" },
+      focus: { es: "Switches industriales Cisco gestionados desde Meraki Dashboard.",
+               en: "Cisco industrial switches managed from Meraki Dashboard." },
+      products: [],
+    },
+    iot_utilities: {
+      campus: "Industrial IOT",
+      name: { es: "Industrial IOT · Win utilities: Scale and manage grid networks", en: "Industrial IOT · Win utilities: Scale and manage grid networks" },
+      focus: { es: "Escala y gestión de redes de servicios públicos (utilities).",
+               en: "Scale and manage utility grid networks." },
+      products: [],
+    },
+  },
+
+
+  /* -------------------------------------------------------------------
+     INDUSTRIES × USE CASES (from Slides 3–4)  with SECURITY mapping
+     ------------------------------------------------------------------- */
+  industries: {
+    retail: {
+      name: { es: "Retail", en: "Retail" }, icon: "cart",
+      tagline: { es: "Del cliente al anaquel, con IA segura.", en: "From shopper to shelf, with secure AI." },
+      useCases: [
+        {
+          id: "retail-personalization",
+          title: { es: "Hiper-personalización", en: "Hyper-Personalization" },
+          desc: { es: "La IA analiza navegación y compras en tiempo real para crear 'segmentos de uno' con ofertas a la medida.",
+                   en: "AI analyzes real-time browsing and purchases to build 'segments of one' with tailored offers." },
+          securityChallenge: {
+            es: "El motor de personalización consume datos personales (PII) y llama a LLMs; hay riesgo de fuga de datos y prompt injection.",
+            en: "The personalization engine consumes PII and calls LLMs; risk of data leakage and prompt injection." },
+          pillars: ["guardrails", "aishadow", "sse", "identity"],
+          products: ["Cisco AI Defense", "Cisco Secure Access", "Duo"],
+          booths: ["sec_ai", "sec_zta"],
+          recommendation: {
+            es: "Protege el LLM de personalización con AI Defense (guardrails + inspección de PII) y controla el acceso con Secure Access.",
+            en: "Protect the personalization LLM with AI Defense (guardrails + PII inspection) and gate access with Secure Access." },
+        },
+        {
+          id: "retail-inventory",
+          title: { es: "Inventario inteligente y pronóstico de demanda", en: "Smart Inventory & Demand Forecasting" },
+          desc: { es: "Predice necesidades de stock con clima, eventos y tendencias sociales para reducir sobrestock y quiebres.",
+                   en: "Predicts stock needs from weather, events and social trends to cut overstock and stockouts." },
+          securityChallenge: {
+            es: "Modelos que ingieren datos de múltiples fuentes/APIs externas: riesgo en la cadena de suministro de software y datos.",
+            en: "Models ingest data from many external sources/APIs: software & data supply-chain risk." },
+          pillars: ["codeguard", "opensource", "intelligence", "soc"],
+          products: ["Cisco AI Defense", "Cisco XDR", "Cisco Talos"],
+          booths: ["sec_ai", "sec_aiwork"],
+          recommendation: {
+            es: "Valida los modelos y sus dependencias open source con AI Defense; correlaciona anomalías con XDR + Talos.",
+            en: "Validate models and their open-source dependencies with AI Defense; correlate anomalies with XDR + Talos." },
+        },
+        {
+          id: "retail-assistant",
+          title: { es: "Asistentes de compra con IA generativa", en: "AI Shopping Assistants" },
+          desc: { es: "'Concierges' con GenAI que ayudan al cliente a encontrar productos por conversación natural.",
+                   en: "GenAI 'concierges' that help customers find products via natural conversation." },
+          securityChallenge: {
+            es: "Chatbot expuesto al público: jailbreak, contenido dañino, exfiltración de datos y abuso del modelo.",
+            en: "Public-facing chatbot: jailbreak, harmful content, data exfiltration and model abuse." },
+          pillars: ["guardrails", "perimeter", "aishadow"],
+          products: ["Cisco AI Defense", "Cisco Secure Firewall"],
+          booths: ["sec_ai", "sec_hmf"],
+          recommendation: {
+            es: "Pon AI Defense frente al asistente para bloquear jailbreaks y fuga de datos, con Secure Firewall en el perímetro.",
+            en: "Place AI Defense in front of the assistant to block jailbreaks and data leakage, with Secure Firewall at the edge." },
+        },
+        {
+          id: "retail-lossprevention",
+          title: { es: "Visión computacional para prevención de pérdidas", en: "Computer Vision for Loss Prevention" },
+          desc: { es: "Meraki y analítica de IA detectan comportamiento sospechoso o errores de cobro en tiempo real.",
+                   en: "Meraki and AI analytics detect suspicious behavior or checkout errors in real time." },
+          securityChallenge: {
+            es: "Cámaras y sensores IoT como superficie de ataque; necesitan identidad, segmentación y visibilidad.",
+            en: "Cameras and IoT sensors as attack surface; they need identity, segmentation and visibility." },
+          pillars: ["segmentation", "identity", "soc"],
+          products: ["Cisco ISE", "Cisco Hypershield", "Cisco XDR", "Meraki"],
+          booths: ["nw_unified", "sec_aiwork"],
+          recommendation: {
+            es: "Segmenta los dispositivos IoT con ISE + Hypershield y vigila el entorno con XDR.",
+            en: "Segment IoT devices with ISE + Hypershield and watch the environment with XDR." },
+        },
+        {
+          id: "retail-pricing",
+          title: { es: "Precios dinámicos", en: "Dynamic Pricing" },
+          desc: { es: "Ajusta precios automáticamente según competencia, inventario y elasticidad de demanda.",
+                   en: "Automatically adjusts prices based on competitor data, inventory and demand elasticity." },
+          securityChallenge: {
+            es: "Decisiones automatizadas de negocio: manipulación de datos de entrada y acceso no autorizado al motor de precios.",
+            en: "Automated business decisions: input-data manipulation and unauthorized access to the pricing engine." },
+          pillars: ["sse", "identity", "guardrails"],
+          products: ["Cisco Secure Access", "Duo", "Cisco AI Defense"],
+          booths: ["sec_zta", "sec_ai"],
+          recommendation: {
+            es: "Restringe quién y qué agente puede tocar el motor con Secure Access + Duo; valida integridad con AI Defense.",
+            en: "Restrict who and which agent can touch the engine with Secure Access + Duo; validate integrity with AI Defense." },
+        },
+      ],
+    },
+
+    financial: {
+      name: { es: "Servicios Financieros", en: "Financial Services" }, icon: "bank",
+      tagline: { es: "Confianza, fraude y cumplimiento a velocidad de IA.", en: "Trust, fraud and compliance at AI speed." },
+      useCases: [
+        {
+          id: "fin-fraud",
+          title: { es: "Detección de fraude en tiempo real", en: "Real-Time Fraud Detection" },
+          desc: { es: "Modelos analizan millones de transacciones por segundo; Cisco + Splunk identifican patrones de crimen financiero.",
+                   en: "Models analyze millions of transactions per second; Cisco + Splunk spot financial-crime patterns." },
+          securityChallenge: {
+            es: "El pipeline de fraude es blanco de ataque; requiere telemetría confiable, correlación y respuesta inmediata.",
+            en: "The fraud pipeline is an attack target; it needs trusted telemetry, correlation and instant response." },
+          pillars: ["soc", "intelligence", "segmentation"],
+          products: ["Splunk Enterprise Security", "Cisco XDR", "Cisco Talos"],
+          booths: ["sec_aiwork", "sec_scc"],
+          recommendation: {
+            es: "Integra el modelo con Splunk + XDR y enriquece con Talos para detección y respuesta en segundos.",
+            en: "Integrate the model with Splunk + XDR and enrich with Talos for detection and response in seconds." },
+        },
+        {
+          id: "fin-trading",
+          title: { es: "Trading algorítmico", en: "Algorithmic Trading" },
+          desc: { es: "ML ejecuta operaciones de alta frecuencia con análisis de sentimiento de noticias y mercado.",
+                   en: "ML runs high-frequency trades using sentiment analysis of news and market data." },
+          securityChallenge: {
+            es: "Latencia y confidencialidad críticas; manipulación de datos de entrada o del modelo puede costar millones.",
+            en: "Latency and confidentiality are critical; tampering with inputs or the model can cost millions." },
+          pillars: ["segmentation", "perimeter", "guardrails"],
+          products: ["Cisco Hypershield", "Cisco Secure Firewall", "Cisco AI Defense"],
+          booths: ["nw_unified", "sec_hmf"],
+          recommendation: {
+            es: "Aísla el entorno de trading con Hypershield y protege el modelo con AI Defense contra manipulación.",
+            en: "Isolate the trading environment with Hypershield and protect the model with AI Defense against tampering." },
+        },
+        {
+          id: "fin-claims",
+          title: { es: "Procesamiento automatizado de siniestros", en: "Automated Claims Processing" },
+          desc: { es: "La IA analiza fotos de accidentes/daños y aprueba reclamos en minutos.",
+                   en: "AI scans accident/damage photos and approves claims in minutes." },
+          securityChallenge: {
+            es: "Decisiones sobre datos sensibles del cliente; riesgo de fuga de PII y de imágenes/datos envenenados.",
+            en: "Decisions over sensitive customer data; risk of PII leakage and poisoned images/data." },
+          pillars: ["guardrails", "codeguard", "aishadow"],
+          products: ["Cisco AI Defense", "Cisco Secure Access"],
+          booths: ["sec_ai", "sec_zta"],
+          recommendation: {
+            es: "AI Defense inspecciona y redacta PII en prompts/respuestas y valida la app; Secure Access controla el acceso.",
+            en: "AI Defense inspects and redacts PII in prompts/responses and validates the app; Secure Access controls access." },
+        },
+        {
+          id: "fin-credit",
+          title: { es: "Scoring de riesgo crediticio", en: "Credit Risk Scoring" },
+          desc: { es: "Usa datos alternativos (pagos de servicios, flujo de caja) para evaluar riesgo con más precisión.",
+                   en: "Uses alternative data (utility payments, cash flow) to assess lending risk more accurately." },
+          securityChallenge: {
+            es: "Modelo regulado: exige trazabilidad, control de datos y evidencia de cumplimiento (CNBV/Banxico).",
+            en: "Regulated model: demands traceability, data control and compliance evidence (CNBV/Banxico)." },
+          pillars: ["identity", "sse", "soc"],
+          products: ["Duo", "Cisco Secure Access", "Splunk Enterprise Security"],
+          booths: ["sec_zta", "sec_aiwork"],
+          recommendation: {
+            es: "Gobierna acceso e identidad con Duo + Secure Access y genera evidencia de cumplimiento con Splunk.",
+            en: "Govern access and identity with Duo + Secure Access and generate compliance evidence with Splunk." },
+        },
+        {
+          id: "fin-compliance",
+          title: { es: "Monitoreo de cumplimiento (RegTech)", en: "Compliance Monitoring (RegTech)" },
+          desc: { es: "IA escanea comunicaciones y transacciones para asegurar apego a regulaciones globales.",
+                   en: "AI scans communications and transactions to ensure adherence to global regulations." },
+          securityChallenge: {
+            es: "Shadow AI y fuga de datos regulados hacia herramientas no aprobadas; visibilidad total es obligatoria.",
+            en: "Shadow AI and leakage of regulated data to unsanctioned tools; full visibility is mandatory." },
+          pillars: ["aishadow", "guardrails", "intelligence"],
+          products: ["Cisco AI Defense", "Cisco Secure Access", "Cisco Talos"],
+          booths: ["sec_ai", "sec_zta"],
+          recommendation: {
+            es: "Descubre y controla Shadow AI con AI Defense + Secure Access AI Access; evita fuga de datos regulados.",
+            en: "Discover and control Shadow AI with AI Defense + Secure Access AI Access; prevent regulated-data leakage." },
+        },
+      ],
+    },
+
+    distribution: {
+      name: { es: "Centros de Distribución", en: "Distribution Centers" }, icon: "box",
+      tagline: { es: "Robots, sensores y datos — asegurados de punta a punta.", en: "Robots, sensors and data — secured end to end." },
+      useCases: [
+        {
+          id: "dist-robotics",
+          title: { es: "Robótica de almacén (AGV/AMR)", en: "Warehouse Robotics (AGVs/AMRs)" },
+          desc: { es: "Robots móviles autónomos que recogen y empacan, optimizados con Cisco URWB.",
+                   en: "Autonomous mobile robots that pick and pack, optimized by Cisco URWB." },
+          securityChallenge: {
+            es: "Robots = identidades no humanas en red OT; comprometerlos detiene la operación física.",
+            en: "Robots = non-human identities on an OT network; compromising them halts physical operations." },
+          pillars: ["identity", "segmentation", "soc"],
+          products: ["Duo", "Cisco ISE", "Cisco Cyber Vision", "Cisco Hypershield"],
+          booths: ["iot_cybervision", "nw_unified"],
+          recommendation: {
+            es: "Da identidad a cada robot con Duo/ISE, segmenta con Hypershield y vigila el OT con Cyber Vision.",
+            en: "Give each robot an identity with Duo/ISE, segment with Hypershield and watch OT with Cyber Vision." },
+        },
+        {
+          id: "dist-slotting",
+          title: { es: "Optimización de slotting", en: "Slotting Optimization" },
+          desc: { es: "La IA decide la colocación más eficiente de mercancía para minimizar recorridos.",
+                   en: "AI determines the most efficient goods placement to minimize travel distance." },
+          securityChallenge: {
+            es: "Modelo con acceso a datos operativos sensibles; requiere control de acceso y validación del modelo.",
+            en: "Model with access to sensitive operational data; needs access control and model validation." },
+          pillars: ["sse", "codeguard", "guardrails"],
+          products: ["Cisco Secure Access", "Cisco AI Defense"],
+          booths: ["sec_zta", "sec_ai"],
+          recommendation: {
+            es: "Controla el acceso al modelo con Secure Access y valida su integridad con AI Defense.",
+            en: "Control model access with Secure Access and validate its integrity with AI Defense." },
+        },
+        {
+          id: "dist-maintenance",
+          title: { es: "Mantenimiento predictivo de bandas", en: "Predictive Maintenance for Conveyors" },
+          desc: { es: "Sensores monitorean vibración y calor para predecir fallas antes de que paren la producción.",
+                   en: "Sensors monitor vibration and heat to predict failures before they stop production." },
+          securityChallenge: {
+            es: "Miles de sensores IoT amplían la superficie de ataque; necesitan segmentación e inteligencia.",
+            en: "Thousands of IoT sensors widen the attack surface; they need segmentation and intelligence." },
+          pillars: ["segmentation", "intelligence", "opensource"],
+          products: ["Cisco Cyber Vision", "Cisco Hypershield", "Cisco Talos"],
+          booths: ["iot_cybervision", "sec_scc"],
+          recommendation: {
+            es: "Segmenta y da visibilidad OT con Cyber Vision + Hypershield, respaldado por Talos.",
+            en: "Segment and gain OT visibility with Cyber Vision + Hypershield, backed by Talos." },
+        },
+        {
+          id: "dist-labor",
+          title: { es: "Optimización de turnos y mano de obra", en: "Labor & Shift Optimization" },
+          desc: { es: "La IA predice picos de demanda y sugiere niveles de staffing y horarios.",
+                   en: "AI predicts peak times and suggests staffing levels and shift schedules." },
+          securityChallenge: {
+            es: "Datos de empleados (PII) procesados por IA; riesgo de fuga y de Shadow AI en RRHH.",
+            en: "Employee data (PII) processed by AI; risk of leakage and Shadow AI in HR." },
+          pillars: ["aishadow", "guardrails", "identity"],
+          products: ["Cisco AI Defense", "Cisco Secure Access", "Duo"],
+          booths: ["sec_ai", "sec_zta"],
+          recommendation: {
+            es: "Evita fuga de PII con AI Defense y controla qué apps de IA se usan con Secure Access AI Access.",
+            en: "Prevent PII leakage with AI Defense and control which AI apps are used with Secure Access AI Access." },
+        },
+        {
+          id: "dist-idp",
+          title: { es: "Procesamiento inteligente de documentos", en: "Intelligent Document Processing" },
+          desc: { es: "NLP digitaliza y verifica automáticamente cartas porte, facturas y manifiestos.",
+                   en: "NLP automatically digitizes and verifies bills of lading, invoices and manifests." },
+          securityChallenge: {
+            es: "Documentos como vector de prompt injection y datos envenenados hacia el LLM.",
+            en: "Documents as a prompt-injection and data-poisoning vector into the LLM." },
+          pillars: ["guardrails", "codeguard", "perimeter"],
+          products: ["Cisco AI Defense", "Cisco Secure Firewall"],
+          booths: ["sec_ai", "sec_hmf"],
+          recommendation: {
+            es: "AI Defense inspecciona el contenido de documentos contra prompt injection antes de llegar al modelo.",
+            en: "AI Defense inspects document content against prompt injection before it reaches the model." },
+        },
+      ],
+    },
+
+    transportation: {
+      name: { es: "Transporte", en: "Transportation" }, icon: "truck",
+      tagline: { es: "Flotas, rutas y seguridad en movimiento.", en: "Fleets, routes and safety in motion." },
+      useCases: [
+        {
+          id: "trans-routing",
+          title: { es: "Optimización dinámica de rutas", en: "Dynamic Route Optimization" },
+          desc: { es: "La IA recalcula rutas en tiempo real según tráfico, clima y consumo de combustible.",
+                   en: "AI recalculates fleet routes in real time based on traffic, weather and fuel use." },
+          securityChallenge: {
+            es: "Datos de ubicación en tiempo real y APIs externas; riesgo de intercepción y manipulación.",
+            en: "Real-time location data and external APIs; risk of interception and manipulation." },
+          pillars: ["sse", "perimeter", "identity"],
+          products: ["Cisco Secure Access", "Cisco Secure Firewall", "Duo"],
+          booths: ["sec_zta", "sec_hmf"],
+          recommendation: {
+            es: "Cifra y segmenta el tráfico con Secure Access y protege las APIs con Secure Firewall.",
+            en: "Encrypt and segment traffic with Secure Access and protect the APIs with Secure Firewall." },
+        },
+        {
+          id: "trans-fleet",
+          title: { es: "Mantenimiento predictivo de flota", en: "Predictive Fleet Maintenance" },
+          desc: { es: "Monitorea salud del motor y presión de llantas en miles de vehículos para programar reparaciones.",
+                   en: "Monitors engine health and tire pressure across thousands of vehicles to schedule repairs." },
+          securityChallenge: {
+            es: "Vehículos conectados = identidades no humanas móviles; enorme superficie de ataque distribuida.",
+            en: "Connected vehicles = mobile non-human identities; a huge distributed attack surface." },
+          pillars: ["identity", "segmentation", "intelligence"],
+          products: ["Duo", "Cisco ISE", "Cisco Talos", "Cisco Hypershield"],
+          booths: ["nw_unified", "sec_scc"],
+          recommendation: {
+            es: "Autentica cada vehículo con Duo/ISE, segmenta con Hypershield y enriquece con Talos.",
+            en: "Authenticate each vehicle with Duo/ISE, segment with Hypershield and enrich with Talos." },
+        },
+        {
+          id: "trans-traffic",
+          title: { es: "Gestión inteligente de tráfico", en: "Smart Traffic Management" },
+          desc: { es: "Semáforos con IA que ajustan tiempos según flujo real, reduciendo congestión hasta 30%.",
+                   en: "AI traffic lights that adjust timing to real-time flow, cutting congestion up to 30%." },
+          securityChallenge: {
+            es: "Infraestructura crítica de ciudad: un compromiso tiene impacto físico y de seguridad pública.",
+            en: "Critical city infrastructure: a compromise has physical and public-safety impact." },
+          pillars: ["segmentation", "soc", "perimeter"],
+          products: ["Cisco Cyber Vision", "Cisco XDR", "Cisco Hypershield"],
+          booths: ["iot_cybervision", "sec_aiwork"],
+          recommendation: {
+            es: "Segmenta y monitorea la infraestructura con Cyber Vision + XDR; enforcement con Hypershield.",
+            en: "Segment and monitor infrastructure with Cyber Vision + XDR; enforcement with Hypershield." },
+        },
+        {
+          id: "trans-dms",
+          title: { es: "Monitoreo del conductor (DMS)", en: "Driver Monitoring Systems (DMS)" },
+          desc: { es: "Cámaras en cabina detectan fatiga o distracción y disparan alertas para mejorar seguridad.",
+                   en: "In-cabin cameras detect fatigue or distraction and trigger alerts to improve safety." },
+          securityChallenge: {
+            es: "Video biométrico sensible procesado por IA; privacidad, fuga de datos y Shadow AI.",
+            en: "Sensitive biometric video processed by AI; privacy, data leakage and Shadow AI." },
+          pillars: ["guardrails", "aishadow", "sse"],
+          products: ["Cisco AI Defense", "Cisco Secure Access"],
+          booths: ["sec_ai", "sec_zta"],
+          recommendation: {
+            es: "Protege datos biométricos con AI Defense y controla el acceso a la app con Secure Access.",
+            en: "Protect biometric data with AI Defense and control app access with Secure Access." },
+        },
+        {
+          id: "trans-lastmile",
+          title: { es: "Última milla autónoma", en: "Autonomous Last-Mile Delivery" },
+          desc: { es: "Gestión de flotas de drones o robots de acera que navegan entornos urbanos complejos.",
+                   en: "Managing fleets of drones or sidewalk robots navigating complex urban environments." },
+          securityChallenge: {
+            es: "Agentes autónomos físicos: exigen identidad fuerte, autorización de acciones y respuesta ante secuestro.",
+            en: "Physical autonomous agents: require strong identity, action authorization and hijack response." },
+          pillars: ["identity", "soc", "guardrails"],
+          products: ["Duo", "Cisco Secure Access", "Cisco XDR", "Cisco AI Defense"],
+          booths: ["sec_zta", "sec_aiwork"],
+          recommendation: {
+            es: "Da identidad y Zero Trust a cada agente con Duo + Secure Access; vigila y responde con XDR.",
+            en: "Give each agent identity and Zero Trust with Duo + Secure Access; monitor and respond with XDR." },
+        },
+      ],
+    },
+
+    manufacturing: {
+      name: { es: "Manufactura", en: "Manufacturing" }, icon: "factory",
+      tagline: { es: "OT, calidad y gemelos digitales protegidos.", en: "OT, quality and digital twins protected." },
+      useCases: [
+        {
+          id: "mfg-quality",
+          title: { es: "Inspección de calidad con IA", en: "AI-Powered Quality Inspection" },
+          desc: { es: "Visión computacional (con Cisco Industrial Ethernet) inspecciona productos con 99.9% de precisión.",
+                   en: "Computer vision (with Cisco Industrial Ethernet) inspects products at 99.9% accuracy." },
+          securityChallenge: {
+            es: "El sistema de visión vive en la línea de producción OT; un fallo o ataque para la planta.",
+            en: "The vision system lives on the OT production line; a failure or attack stops the plant." },
+          pillars: ["segmentation", "identity", "intelligence"],
+          products: ["Cisco Cyber Vision", "Cisco Industrial Ethernet", "ISE", "Cisco Talos"],
+          booths: ["iot_cybervision", "sec_scc"],
+          recommendation: {
+            es: "Segmenta la línea con Cyber Vision + ISE y respalda con inteligencia de Talos.",
+            en: "Segment the line with Cyber Vision + ISE and back it with Talos intelligence." },
+        },
+        {
+          id: "mfg-twins",
+          title: { es: "Gemelos digitales", en: "Digital Twins" },
+          desc: { es: "Réplica virtual de la planta para simular escenarios y optimizar flujos sin riesgo.",
+                   en: "Virtual replica of the factory to simulate scenarios and optimize workflows risk-free." },
+          securityChallenge: {
+            es: "El gemelo concentra datos completos de la planta: si se filtra, expone toda la operación.",
+            en: "The twin concentrates full plant data: if leaked, it exposes the entire operation." },
+          pillars: ["sse", "guardrails", "codeguard"],
+          products: ["Cisco Secure Access", "Cisco AI Defense", "Cisco Hypershield"],
+          booths: ["sec_zta", "sec_ai"],
+          recommendation: {
+            es: "Aplica Zero Trust al gemelo con Secure Access y protege sus modelos/datos con AI Defense.",
+            en: "Apply Zero Trust to the twin with Secure Access and protect its models/data with AI Defense." },
+        },
+        {
+          id: "mfg-pdm",
+          title: { es: "Mantenimiento predictivo (PdM)", en: "Predictive Maintenance (PdM)" },
+          desc: { es: "Analiza datos de sensores de máquinas industriales para evitar paros no planeados.",
+                   en: "Analyzes industrial machine sensor data to prevent costly unplanned downtime." },
+          securityChallenge: {
+            es: "Convergencia IT/OT: los datos de sensores cruzan fronteras que antes estaban aisladas.",
+            en: "IT/OT convergence: sensor data crosses boundaries that used to be isolated." },
+          pillars: ["segmentation", "soc", "opensource"],
+          products: ["Cisco Cyber Vision", "Cisco XDR", "Cisco Hypershield"],
+          booths: ["iot_cybervision", "sec_aiwork"],
+          recommendation: {
+            es: "Controla la frontera IT/OT con Hypershield + Cyber Vision y correlaciona con XDR.",
+            en: "Control the IT/OT boundary with Hypershield + Cyber Vision and correlate with XDR." },
+        },
+        {
+          id: "mfg-gendesign",
+          title: { es: "Diseño generativo", en: "Generative Design" },
+          desc: { es: "La IA propone miles de iteraciones de una pieza según peso, resistencia y material.",
+                   en: "AI suggests thousands of part design iterations based on weight, strength and material." },
+          securityChallenge: {
+            es: "Propiedad intelectual crítica en los prompts y modelos; riesgo de robo de IP y Shadow AI.",
+            en: "Critical IP inside prompts and models; risk of IP theft and Shadow AI." },
+          pillars: ["aishadow", "guardrails", "codeguard"],
+          products: ["Cisco AI Defense", "Cisco Secure Access"],
+          booths: ["sec_ai", "sec_zta"],
+          recommendation: {
+            es: "Protege la IP en prompts con AI Defense y evita herramientas no aprobadas con Secure Access AI Access.",
+            en: "Protect prompt IP with AI Defense and block unsanctioned tools with Secure Access AI Access." },
+        },
+        {
+          id: "mfg-otsec",
+          title: { es: "Ciberseguridad OT", en: "OT Cybersecurity" },
+          desc: { es: "Cisco Cyber Vision + IA detectan patrones anómalos en sistemas de control industrial (ICS).",
+                   en: "Cisco Cyber Vision + AI detect anomalous patterns in industrial control systems (ICS)." },
+          securityChallenge: {
+            es: "Los ICS no fueron diseñados para ciberseguridad; requieren visibilidad, segmentación e inteligencia dedicadas.",
+            en: "ICS were not designed for cybersecurity; they need dedicated visibility, segmentation and intelligence." },
+          pillars: ["segmentation", "intelligence", "soc", "identity"],
+          products: ["Cisco Cyber Vision", "Cisco ISE", "Cisco XDR", "Cisco Talos"],
+          booths: ["iot_cybervision", "sec_aiwork"],
+          recommendation: {
+            es: "Base OT completa: Cyber Vision para visibilidad, ISE para identidad, XDR + Talos para detección.",
+            en: "Full OT foundation: Cyber Vision for visibility, ISE for identity, XDR + Talos for detection." },
+        },
+      ],
+    },
+  },
+
+  /* -------------------------------------------------------------------
+     UI STRINGS (ES / EN)
+     ------------------------------------------------------------------- */
+  ui: {
+    attract_kicker: { es: "Cisco AI Bridge · Cisco Connect Cancún 2026", en: "Cisco AI Bridge · Cisco Connect Cancún 2026" },
+    attract_title: { es: "Security Blueprint", en: "Security Blueprint" },
+    attract_sub: { es: "Asegura la era de la IA — de la red al agente.", en: "Secure the AI era — from network to agent." },
+    attract_cta: { es: "Toca para comenzar", en: "Tap to begin" },
+    lang_label: { es: "EN", en: "ES" },
+
+    path_title: { es: "¿Cómo quieres explorar?", en: "How do you want to explore?" },
+    path_exp_title: { es: "Ya sé mi caso de uso", en: "I know my use case" },
+    path_exp_desc: { es: "Cuéntame tu caso de uso y te muestro cómo el portafolio de Cisco lo asegura y qué booths visitar.",
+                     en: "Tell me your use case and I'll show how Cisco's portfolio secures it and which booths to visit." },
+    path_new_title: { es: "Ayúdame a descubrirlo", en: "Help me discover it" },
+    path_new_desc: { es: "Elige tu industria y te guío por los casos de uso de IA que identificamos para ti.",
+                     en: "Pick your industry and I'll guide you through the AI use cases we identified for you." },
+
+    industry_title: { es: "Selecciona tu industria", en: "Select your industry" },
+    usecase_title: { es: "Selecciona tu caso de uso", en: "Select your use case" },
+    usecase_title_new: { es: "Casos de uso que identificamos", en: "Use cases we identified" },
+
+    result_challenge: { es: "El reto de seguridad", en: "The security challenge" },
+    result_pillars: { es: "Pilares de seguridad que aplican", en: "Security pillars that apply" },
+    result_products: { es: "Portafolio Cisco recomendado", en: "Recommended Cisco portfolio" },
+    result_reco: { es: "Cómo Cisco lo asegura", en: "How Cisco secures it" },
+    result_booths: { es: "Booths que debes visitar", en: "Booths you should visit" },
+
+    btn_back: { es: "Atrás", en: "Back" },
+    btn_restart: { es: "Empezar de nuevo", en: "Start over" },
+    btn_explore_pillars: { es: "Ver los 10 pilares", en: "See the 10 pillars" },
+    pillars_title: { es: "Blueprint de Seguridad · 10 Pilares", en: "Security Blueprint · 10 Pillars" },
+    pillars_hint: { es: "Toca un pilar para ver los productos Cisco y por qué están ahí", en: "Tap a pillar to see the Cisco products and why they belong there" },
+    pillar_products: { es: "Productos Cisco que lo habilitan", en: "Cisco products that enable it" },
+    pillar_why: { es: "Por qué", en: "Why" },
+    pillar_back: { es: "Volver a los 10 pilares", en: "Back to the 10 pillars" },
+
+    footer: { es: "Cisco AI Bridge · Cisco Connect Cancún 2026 · © Cisco Systems México",
+              en: "Cisco AI Bridge · Cisco Connect Cancún 2026 · © Cisco Systems Mexico" },
+  },
+};
+
+const initialLang=(function(){try{const u=new URL(location.href);const q=u.searchParams.get('lang');if(q==='es'||q==='en')return q;const ls=localStorage.getItem('cisco.aibridge.lang');if(ls==='es'||ls==='en')return ls;}catch(e){}return 'es';})();
+const state={lang:initialLang,screen:'attract',path:null,industry:null,useCase:null,pillar:null};
+function persistLang(){try{localStorage.setItem('cisco.aibridge.lang',state.lang);const u=new URL(location.href);u.searchParams.set('lang',state.lang);history.replaceState(null,'',u);}catch(e){}}
+function goHub(){location.href='../landing/index.html?lang='+encodeURIComponent(state.lang);}
+const app=document.getElementById('app'), overlay=document.getElementById('pillarOverlay');
+const accents=['#16BDEB','#3070E7','#22C55E','#FF9000','#FF007F'];
+const t=(v)=>v&&typeof v==='object'&&('es'in v||'en'in v)?v[state.lang]:v;
+const ui=(k)=>t(BOOTH_DATA.ui[k]);
+const esc=(s)=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+function icon(name){const common='viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"'; const p={
+id:`<rect x="12" y="14" width="40" height="36" rx="8"/><circle cx="32" cy="29" r="6"/><path d="M22 43c4-8 16-8 20 0"/>`, 'shield-lock':`<path d="M32 6l21 8v16c0 14-9 23-21 28C20 53 11 44 11 30V14l21-8z"/><rect x="24" y="29" width="16" height="13" rx="3"/><path d="M27 29v-5a5 5 0 0110 0v5"/>`, grid:`<rect x="10" y="10" width="18" height="18" rx="4"/><rect x="36" y="10" width="18" height="18" rx="4"/><rect x="10" y="36" width="18" height="18" rx="4"/><rect x="36" y="36" width="18" height="18" rx="4"/>`, eye:`<path d="M5 32s10-16 27-16 27 16 27 16-10 16-27 16S5 32 5 32z"/><circle cx="32" cy="32" r="8"/>`, radar:`<circle cx="32" cy="32" r="23"/><circle cx="32" cy="32" r="7"/><path d="M32 32l17-15M32 9v7M32 48v7M9 32h7M48 32h7"/>`, 'brick-wall':`<path d="M8 18h48v32H8zM8 29h48M8 40h48M20 18v11M44 18v11M32 29v11M20 40v10M44 40v10"/>`, guard:`<path d="M32 6l20 9v14c0 14-8 23-20 29-12-6-20-15-20-29V15l20-9z"/><path d="M24 33l6 6 12-15"/>`, code:`<path d="M24 20L12 32l12 12M40 20l12 12-12 12M35 14l-6 36"/>`, branch:`<circle cx="18" cy="18" r="6"/><circle cx="46" cy="18" r="6"/><circle cx="32" cy="48" r="6"/><path d="M22 22c8 8 10 13 10 20M42 22c-8 8-10 13-10 20"/>`, globe:`<circle cx="32" cy="32" r="24"/><path d="M8 32h48M32 8c8 8 8 40 0 48M32 8c-8 8-8 40 0 48"/>`,
+cart:`<circle cx="24" cy="51" r="4"/><circle cx="47" cy="51" r="4"/><path d="M8 12h8l7 28h27l6-20H21"/>`, bank:`<path d="M8 25h48L32 10 8 25zM14 25v25M26 25v25M38 25v25M50 25v25M10 50h44"/>`, box:`<path d="M12 22l20-11 20 11v24L32 57 12 46V22zM12 22l20 11 20-11M32 33v24"/>`, truck:`<path d="M7 20h32v24H7zM39 29h10l8 8v7H39z"/><circle cx="19" cy="49" r="5"/><circle cx="48" cy="49" r="5"/>`, factory:`<path d="M8 52V25l14 9V24l14 10V16h18v36H8zM15 43h8M30 43h8M45 43h6"/>`}; return `<svg class="icon" ${common}>${p[name]||p.grid}</svg>`}
+function chrome(content,progress=''){const hubLabel=state.lang==='es'?'‹ Volver al Hub':'‹ Back to Hub'; app.innerHTML=`<div class="topbar"><div class="brand"><div class="word">CISCO</div><div class="stage">AI Bridge · Security</div></div><div class="topbarRight"><button class="hub tap" data-action="hub" title="${hubLabel}">${hubLabel}</button><button class="lang tap" data-action="lang">${ui('lang_label')}</button></div></div>${progress}<section class="screen ${state.screen==='attract'?'hero':''}">${content}</section><div class="footer">${ui('footer')}</div>`}
+function progress(){if(state.screen==='attract')return'';const steps=['path','industry','usecase','result'];return`<div class="progress">${steps.map(s=>`<span class="${s===state.screen?'on':''}">${s==='path'?'Path':s==='industry'?'Industry':s==='usecase'?'Use case':'Result'}</span>`).join('<b>›</b>')}</div>`}
+function titleBlock(title){return`<div class="titleBlock"><div class="eyebrow">${esc(BOOTH_DATA.meta.event)}</div><h2 class="pageTitle">${esc(title)}</h2></div>`}
+function render(){document.documentElement.lang=state.lang; const r={attract, path, industry, usecase, result}[state.screen]; r();}
+function attract(){chrome(`<div class="kicker">${ui('attract_kicker')}</div><h1>${ui('attract_title')}</h1><p class="subtitle">${ui('attract_sub')}</p><div class="ctaRow"><button class="cta tap" data-action="start">${ui('attract_cta')}</button><button class="ghost tap" data-action="pillars">${ui('btn_explore_pillars')}</button></div>`)}
+function path(){chrome(`${titleBlock(ui('path_title'))}<div class="grid two"><article class="card pathCard tap" style="--accent:#16BDEB;--i:0" data-action="path" data-path="experienced"><div class="icon">${icon('radar')}</div><h2>${ui('path_exp_title')}</h2><p>${ui('path_exp_desc')}</p><div class="num">01</div></article><article class="card pathCard tap" style="--accent:#FF007F;--i:1" data-action="path" data-path="new"><div class="icon">${icon('eye')}</div><h2>${ui('path_new_title')}</h2><p>${ui('path_new_desc')}</p><div class="num">02</div></article></div><div class="actions"><button class="btn" data-action="pillars">${ui('btn_explore_pillars')}</button></div>`,progress())}
+function industry(){const cards=Object.entries(BOOTH_DATA.industries).map(([id,ind],i)=>`<article class="card industryCard tap" style="--accent:${accents[i]};--i:${i}" data-action="industry" data-id="${id}">${icon(ind.icon)}<h3>${t(ind.name)}</h3><p>${t(ind.tagline)}</p></article>`).join(''); chrome(`${titleBlock(ui('industry_title'))}<div class="grid five">${cards}</div><div class="actions"><button class="btn" data-action="back">${ui('btn_back')}</button></div>`,progress())}
+function usecase(){const ind=BOOTH_DATA.industries[state.industry];const cards=ind.useCases.map((uc,i)=>`<article class="card usecaseCard tap" style="--accent:${accents[i%accents.length]};--i:${i}" data-action="usecase" data-id="${uc.id}"><h3>${t(uc.title)}</h3><p>${t(uc.desc)}</p></article>`).join('');chrome(`${titleBlock(state.path==='experienced'?ui('usecase_title'):ui('usecase_title_new'))}<div class="grid cards">${cards}</div><div class="actions"><button class="btn" data-action="back">${ui('btn_back')}</button></div>`,progress())}
+function result(){const ind=BOOTH_DATA.industries[state.industry], uc=ind.useCases.find(u=>u.id===state.useCase); const pillars=uc.pillars.map(id=>{const p=BOOTH_DATA.pillars[id];return`<div class="chip" style="--pc:${p.color}" title="${esc(t(p.short))}">${icon(p.icon)}<div><b>${t(p.name)}</b><small>${t(p.short)}</small></div></div>`}).join(''); const products=uc.products.map(p=>`<span class="badge">${esc(p)}</span>`).join(''); const booths=uc.booths.map(id=>{const b=BOOTH_DATA.booths[id];return`<article class="booth"><h3>${t(b.name)}</h3><p>${t(b.focus)}</p><div class="badges">${b.products.map(p=>`<span class="badge">${esc(p)}</span>`).join('')}</div></article>`}).join(''); chrome(`<div class="result"><div class="resultHero"><div class="resultHeader"><div class="eyebrow">${t(ind.name)} · ${t(ind.tagline)}</div><h2>${t(uc.title)}</h2><p>${t(uc.desc)}</p></div><div class="callout"><h3 class="sectionTitle">${ui('result_challenge')}</h3><p>${t(uc.securityChallenge)}</p></div></div><div class="resultGrid"><section class="panel"><h3 class="sectionTitle">${ui('result_pillars')}</h3><div class="pillars">${pillars}</div></section><section class="panel reco"><h3 class="sectionTitle">${ui('result_reco')}</h3><p>${t(uc.recommendation)}</p></section><section class="panel"><h3 class="sectionTitle">${ui('result_products')}</h3><div class="badges">${products}</div></section><section class="panel booths"><h3 class="sectionTitle">${ui('result_booths')}</h3><div class="boothGrid">${booths}</div></section></div><div class="actions"><button class="btn" data-action="back">${ui('btn_back')}</button><button class="btn primary" data-action="restart">${ui('btn_restart')}</button></div></div>`,progress())}
+function pillarGrid(){const cards=Object.entries(BOOTH_DATA.pillars).map(([id,p],i)=>`<article class="pillarCard tap" tabindex="0" role="button" aria-label="${esc(t(p.name))}" style="--pc:${p.color};--i:${i}" data-action="pillar-detail" data-id="${id}">${icon(p.icon)}<h3>${t(p.name)}</h3><p>${t(p.short)}</p><span class="chev" aria-hidden="true">›</span></article>`).join(''); return `<div class="overlayTop"><div><h2 class="pageTitle">${ui('pillars_title')}</h2><p class="pillarsHint">${ui('pillars_hint')}</p></div><button class="close" data-action="close">×</button></div><div class="pillarGrid">${cards}</div>`}
+function pillarDetail(){const p=BOOTH_DATA.pillars[state.pillar]||Object.values(BOOTH_DATA.pillars)[0]; const products=(p.products||[]).map((prod,i)=>`<article class="pillarProduct" style="--i:${i}"><strong class="productName">${esc(prod.name)}</strong><span class="whyLabel">${ui('pillar_why')}</span><p>${esc(t(prod.why))}</p></article>`).join(''); return `<div class="overlayTop"><button class="btn pillarBack" data-action="pillar-grid">‹ ${ui('pillar_back')}</button><button class="close" data-action="close">×</button></div><section class="pillarDetail" style="--pc:${p.color}"><div class="pillarDetailHead">${icon(p.icon)}<div><div class="eyebrow">${esc(p.key)}</div><h3>${t(p.name)}</h3></div></div><p class="pillarLead">${t(p.short)}</p><h3 class="sectionTitle">${ui('pillar_products')}</h3><div class="pillarProducts">${products}</div></section>`}
+function showPillars(){overlay.className='overlay open'; overlay.setAttribute('aria-hidden','false'); overlay.innerHTML=`<div class="overlayBox">${state.pillar?pillarDetail():pillarGrid()}</div>`}
+function hidePillars(){state.pillar=null; overlay.className='overlay'; overlay.setAttribute('aria-hidden','true')}
+function back(){if(state.screen==='result'){state.screen='usecase';state.useCase=null}else if(state.screen==='usecase'){state.screen='industry';state.industry=null}else if(state.screen==='industry'){state.screen='path';state.path=null}else state.screen='attract';render()}
+document.addEventListener('click',e=>{resetIdle(); const el=e.target.closest('[data-action]'); if(!el)return; const a=el.dataset.action; if(a==='hub'){goHub();return} if(a==='lang'){state.lang=state.lang==='es'?'en':'es'; persistLang(); render(); if(overlay.classList.contains('open'))showPillars()} if(a==='start'){state.screen='path';render()} if(a==='path'){state.path=el.dataset.path;state.screen='industry';render()} if(a==='industry'){state.industry=el.dataset.id;state.screen='usecase';render()} if(a==='usecase'){state.useCase=el.dataset.id;state.screen='result';render()} if(a==='back')back(); if(a==='restart'){state.screen='attract';state.path=state.industry=state.useCase=null;render()} if(a==='pillars'){state.pillar=null;showPillars()} if(a==='pillar-detail'){state.pillar=el.dataset.id;showPillars()} if(a==='pillar-grid'){state.pillar=null;showPillars()} if(a==='close')hidePillars();});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-action="pillar-detail"]')){e.preventDefault();e.target.click()}});
+let idle; function resetIdle(){clearTimeout(idle); idle=setTimeout(()=>{goHub()},90000)} ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
+function initCanvas(){const c=document.getElementById('network'),ctx=c.getContext('2d');let w,h,dpr,pts=[];function resize(){dpr=Math.min(devicePixelRatio||1,2);w=c.width=innerWidth*dpr;h=c.height=innerHeight*dpr;c.style.width=innerWidth+'px';c.style.height=innerHeight+'px';pts=Array.from({length:Math.min(90,Math.floor(innerWidth/18))},()=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.34*dpr,vy:(Math.random()-.5)*.34*dpr,r:(Math.random()*2+1)*dpr}))}function tick(){ctx.clearRect(0,0,w,h);for(const p of pts){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1}for(let i=0;i<pts.length;i++){for(let j=i+1;j<pts.length;j++){const a=pts[i],b=pts[j],dx=a.x-b.x,dy=a.y-b.y,dist=Math.hypot(dx,dy);if(dist<165*dpr){ctx.globalAlpha=(1-dist/(165*dpr))*.42;ctx.strokeStyle='#16BDEB';ctx.lineWidth=1*dpr;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}}}for(const p of pts){ctx.globalAlpha=.75;ctx.fillStyle=Math.random()>.5?'#16BDEB':'#3070E7';ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()}requestAnimationFrame(tick)}addEventListener('resize',resize);resize();tick()}
+initCanvas(); render(); resetIdle();
+  </script>
+</body>
+</html>

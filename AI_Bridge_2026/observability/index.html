@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Cisco AI Bridge · Observability Blueprint Kiosk</title>
+  <style>
+    :root{
+      --cisco-blue:#3070E7; --navy:#07182D; --dark:#0F1729; --teal:#16BDEB;
+      --green:#22C55E; --yellow:#F59E0B; --orange:#FF9000; --red:#EF4444;
+      --cyber:#00C8FF; --pink:#FF007F; --ink:#EAF6FF; --muted:#A8C4D8;
+      --glass:rgba(10,30,54,.62); --glass2:rgba(255,255,255,.08); --line:rgba(120,210,255,.22);
+      --shadow:0 24px 90px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.12);
+      font-family:'CiscoSans','Helvetica Neue',Helvetica,Arial,sans-serif;
+    }
+    *{box-sizing:border-box} html,body{height:100%;margin:0;overflow:hidden;background:#030B18;color:var(--ink);font-family:'CiscoSans','Helvetica Neue',Helvetica,Arial,sans-serif;touch-action:manipulation;user-select:none;-webkit-tap-highlight-color:transparent}
+    body:before{content:"";position:fixed;inset:-20%;background:radial-gradient(circle at 18% 20%,rgba(48,112,231,.42),transparent 27%),radial-gradient(circle at 80% 8%,rgba(0,200,255,.34),transparent 24%),radial-gradient(circle at 74% 76%,rgba(255,0,127,.18),transparent 28%),linear-gradient(135deg,#030813 0%,#07182D 45%,#081121 100%);z-index:-4;animation:mesh 18s ease-in-out infinite alternate}
+    body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:10;opacity:.15;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(circle at center,#000 20%,transparent 86%)}
+    @keyframes mesh{0%{filter:hue-rotate(0deg) saturate(1);transform:scale(1)}100%{filter:hue-rotate(12deg) saturate(1.25);transform:scale(1.08)}}
+    #network{position:fixed;inset:0;z-index:-3;opacity:.82} .orb{position:fixed;border-radius:999px;filter:blur(18px);opacity:.34;z-index:-2;animation:float 10s ease-in-out infinite alternate}.orb.a{width:290px;height:290px;background:var(--teal);left:5%;bottom:8%}.orb.b{width:220px;height:220px;background:var(--pink);right:9%;top:17%;animation-delay:-3s}.orb.c{width:180px;height:180px;background:var(--green);right:30%;bottom:7%;animation-delay:-6s}@keyframes float{to{transform:translate3d(28px,-42px,0) scale(1.18)}}
+    .app{position:relative;height:100%;display:flex;flex-direction:column;padding:34px clamp(28px,4vw,72px) 26px}.topbar{position:relative;z-index:20;display:flex;align-items:center;justify-content:space-between;min-height:74px;gap:20px}.brand{display:flex;align-items:center;gap:16px;font-weight:900;letter-spacing:.22em;color:#fff}.brand .word{font-size:clamp(18px,2vw,28px);color:#7DDCFF;text-shadow:0 0 24px rgba(22,189,235,.55)}.brand .stage{font-size:13px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}.lang{min-width:92px;height:64px;border:1px solid rgba(125,220,255,.32);background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.05));color:#fff;border-radius:22px;font-size:22px;font-weight:900;box-shadow:var(--shadow);cursor:pointer}.topbarRight{display:flex;gap:12px;align-items:center}.hub{min-height:64px;padding:0 20px;border:1px solid rgba(125,220,255,.32);background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));color:#DDF8FF;border-radius:20px;font-size:17px;font-weight:850;letter-spacing:.02em;cursor:pointer;box-shadow:var(--shadow);white-space:nowrap}.hub:hover{border-color:rgba(125,220,255,.6);background:linear-gradient(180deg,rgba(48,112,231,.28),rgba(22,189,235,.14))}.hub:active,.lang:active,.tap:active{transform:scale(.97)}
+    .progress{display:flex;align-items:center;gap:10px;min-height:34px;margin-top:-4px;color:#85B7D6;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.12em}.progress span{opacity:.52}.progress .on{opacity:1;color:#fff;text-shadow:0 0 14px rgba(0,200,255,.55)}.progress b{opacity:.3}.screen{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0;animation:screenIn .38s ease-out both}@keyframes screenIn{from{opacity:0;transform:translateY(18px) scale(.988);filter:blur(7px)}to{opacity:1;transform:none;filter:none}}
+    .footer{position:relative;z-index:2;text-align:center;color:rgba(201,229,245,.58);font-size:14px;letter-spacing:.08em;padding-top:12px}.kicker{color:#7DDCFF;font-size:clamp(18px,2vw,28px);font-weight:900;letter-spacing:.18em;text-transform:uppercase;text-shadow:0 0 26px rgba(22,189,235,.62)}.hero{align-items:flex-start;text-align:left;position:relative}.hero:before{content:"";position:absolute;width:min(58vw,820px);height:min(58vw,820px);right:-6vw;top:42%;transform:translateY(-50%);border-radius:50%;background:conic-gradient(from 40deg,transparent,rgba(22,189,235,.4),transparent,rgba(48,112,231,.5),transparent);filter:blur(.2px);opacity:.72;animation:spin 18s linear infinite}.hero:after{content:"AI\A OBSERVABILITY\A BRIDGE";white-space:pre;position:absolute;right:4vw;top:50%;transform:translateY(-50%) rotate(-7deg);font-size:clamp(56px,8vw,150px);line-height:.78;font-weight:950;letter-spacing:-.07em;color:transparent;-webkit-text-stroke:1px rgba(125,220,255,.18);opacity:.9}@keyframes spin{to{transform:translateY(-50%) rotate(360deg)}}
+    h1{font-size:clamp(74px,10.2vw,190px);line-height:.78;margin:18px 0 22px;letter-spacing:-.085em;font-weight:950;max-width:1050px;background:linear-gradient(90deg,#fff 0%,#BCEEFF 36%,#16BDEB 68%,#3070E7 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 28px 80px rgba(0,200,255,.16)}.subtitle{font-size:clamp(26px,3.2vw,56px);line-height:1.05;color:#D6F6FF;max-width:900px;margin:0 0 44px;font-weight:750;letter-spacing:-.03em}.ctaRow{display:flex;gap:18px;align-items:center;flex-wrap:wrap}.cta{min-height:84px;padding:0 38px;border:0;border-radius:28px;background:linear-gradient(100deg,var(--cisco-blue),var(--teal));color:#fff;font-size:clamp(24px,2.4vw,38px);font-weight:950;letter-spacing:-.02em;box-shadow:0 0 0 0 rgba(22,189,235,.65),0 22px 70px rgba(0,200,255,.35);animation:pulse 1.7s ease-in-out infinite;cursor:pointer}.ghost{min-height:72px;padding:0 26px;border-radius:24px;border:1px solid rgba(125,220,255,.34);background:rgba(255,255,255,.07);color:#DDF8FF;font-size:20px;font-weight:850;cursor:pointer}@keyframes pulse{50%{box-shadow:0 0 0 16px rgba(22,189,235,0),0 22px 84px rgba(0,200,255,.54);transform:translateY(-2px)}}
+    .titleBlock{margin-bottom:26px}.eyebrow{font-size:15px;text-transform:uppercase;letter-spacing:.22em;font-weight:900;color:#6DE8FF}.pageTitle{font-size:clamp(40px,5.2vw,86px);line-height:.92;margin:8px 0 0;font-weight:950;letter-spacing:-.055em}.grid{display:grid;gap:22px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.five{grid-template-columns:repeat(5,minmax(0,1fr))}.grid.cards{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-content:center}.card{position:relative;overflow:hidden;min-height:220px;border-radius:34px;border:1px solid rgba(157,222,255,.22);background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.045));box-shadow:var(--shadow);padding:28px;cursor:pointer;isolation:isolate;animation:cardIn .52s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*60ms)}.card:before{content:"";position:absolute;inset:-1px;background:radial-gradient(circle at var(--x,18%) var(--y,12%),color-mix(in srgb,var(--accent,#16BDEB) 55%,transparent),transparent 34%);opacity:.55;z-index:-1;transition:.35s}.card:after{content:"";position:absolute;inset:auto -20% -45% -20%;height:55%;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent,#16BDEB) 35%,transparent),transparent);filter:blur(28px);opacity:.36;transition:.35s}.card:hover,.card:focus-visible{transform:translateY(-8px);border-color:color-mix(in srgb,var(--accent,#16BDEB) 70%,white);box-shadow:0 34px 110px rgba(0,0,0,.5),0 0 42px color-mix(in srgb,var(--accent,#16BDEB) 32%,transparent)}.card:hover:before{opacity:.85}.card h2,.card h3{margin:0;color:#fff;letter-spacing:-.04em}.card h2{font-size:clamp(34px,4vw,68px);line-height:.92}.card h3{font-size:clamp(24px,2.1vw,38px);line-height:1.02}.card p{color:#C2D8E8;font-size:clamp(17px,1.3vw,23px);line-height:1.32;margin:16px 0 0}.card .icon{width:72px;height:72px;margin-bottom:20px;color:var(--accent);filter:drop-shadow(0 0 16px color-mix(in srgb,var(--accent) 62%,transparent))}.pathCard{min-height:390px;padding:42px}.pathCard .num{position:absolute;right:28px;bottom:18px;font-size:120px;font-weight:950;letter-spacing:-.12em;color:rgba(255,255,255,.055)}@keyframes cardIn{from{opacity:0;transform:translateY(26px) scale(.96)}to{opacity:1;transform:none}}
+    .industryCard{min-height:290px;padding:24px}.usecaseCard{min-height:230px}.result{justify-content:flex-start;overflow:auto;padding:8px 2px 12px;scrollbar-width:none}.result::-webkit-scrollbar{display:none}.resultHero{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:stretch;margin-bottom:20px}.resultHeader{border-radius:36px;border:1px solid rgba(157,222,255,.24);background:linear-gradient(145deg,rgba(48,112,231,.24),rgba(255,255,255,.06));box-shadow:var(--shadow);padding:30px}.resultHeader h2{font-size:clamp(38px,4.6vw,78px);line-height:.92;margin:0 0 16px;letter-spacing:-.06em}.resultHeader p{font-size:clamp(19px,1.45vw,25px);color:#CDEBFA;line-height:1.28;margin:0}.callout{border-radius:32px;padding:28px;border:1px solid rgba(239,68,68,.36);background:radial-gradient(circle at 12% 10%,rgba(239,68,68,.34),transparent 44%),rgba(255,255,255,.06);box-shadow:var(--shadow)}.sectionTitle{display:flex;align-items:center;gap:12px;font-size:clamp(20px,1.6vw,30px);font-weight:950;letter-spacing:-.03em;color:#fff;margin:0 0 16px}.sectionTitle:before{content:"";width:12px;height:32px;border-radius:20px;background:linear-gradient(var(--teal),var(--cisco-blue));box-shadow:0 0 22px rgba(22,189,235,.7)}.callout p,.reco p{font-size:clamp(19px,1.35vw,24px);line-height:1.3;color:#FFE8E8;margin:0}.resultGrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{border-radius:32px;border:1px solid rgba(157,222,255,.22);background:rgba(255,255,255,.065);box-shadow:var(--shadow);padding:24px}.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.chip{display:flex;gap:12px;align-items:flex-start;min-height:84px;border-radius:22px;padding:14px;border:1px solid color-mix(in srgb,var(--pc) 56%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--pc) 24%,transparent),rgba(255,255,255,.045))}.chip svg{flex:0 0 34px;width:34px;height:34px;color:var(--pc)}.chip b{display:block;font-size:17px;color:#fff}.chip small{display:block;color:#BBD2DF;font-size:12px;line-height:1.25;margin-top:4px}.badges{display:flex;flex-wrap:wrap;gap:10px}.badge{min-height:46px;display:inline-flex;align-items:center;border-radius:999px;padding:0 16px;border:1px solid rgba(125,220,255,.3);background:rgba(0,200,255,.08);color:#E9FBFF;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;font-weight:800}.reco{background:radial-gradient(circle at 95% 5%,rgba(34,197,94,.22),transparent 38%),rgba(255,255,255,.065)}.booths{grid-column:1/-1}.boothGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}.booth{position:relative;overflow:hidden;border-radius:30px;padding:24px;border:1px solid rgba(22,189,235,.42);background:linear-gradient(135deg,rgba(48,112,231,.28),rgba(0,200,255,.09));box-shadow:0 22px 70px rgba(0,0,0,.38),0 0 38px rgba(0,200,255,.14)}.booth:before{content:"VISIT";position:absolute;right:14px;top:8px;font-size:54px;font-weight:950;letter-spacing:-.08em;color:rgba(255,255,255,.06)}.booth h3{font-size:clamp(24px,2vw,36px);line-height:1;margin:0 0 12px;letter-spacing:-.04em}.booth p{color:#C8E7F5;font-size:18px;line-height:1.28;margin:0 0 16px}.actions{display:flex;gap:14px;margin-top:18px}.btn{min-height:64px;padding:0 24px;border-radius:22px;border:1px solid rgba(125,220,255,.3);background:rgba(255,255,255,.08);color:#fff;font-size:19px;font-weight:900;cursor:pointer}.btn.primary{background:linear-gradient(100deg,var(--cisco-blue),var(--teal));border:0}.overlay{position:fixed;inset:0;z-index:50;display:none;padding:36px clamp(24px,4vw,74px);background:rgba(3,8,19,.72);backdrop-filter:blur(18px)}.overlay.open{display:flex;animation:screenIn .28s ease both}.overlayBox{width:100%;height:100%;overflow:auto;border-radius:42px;border:1px solid rgba(157,222,255,.28);background:linear-gradient(145deg,rgba(7,24,45,.92),rgba(15,23,41,.88));box-shadow:0 34px 130px rgba(0,0,0,.66);padding:30px}.overlayTop{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:24px}.pillarGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.pillarCard{min-height:190px;border-radius:28px;padding:20px;border:1px solid color-mix(in srgb,var(--pc) 50%,transparent);background:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--pc) 32%,transparent),transparent 44%),rgba(255,255,255,.06)}.pillarCard svg{width:48px;height:48px;color:var(--pc)}.pillarCard h3{font-size:25px;margin:12px 0 8px}.pillarCard p{margin:0;color:#C7DCE9;line-height:1.3}.close{min-width:64px;height:64px;border-radius:22px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.09);color:#fff;font-size:34px;cursor:pointer}
+    .pillarsHint{margin:-6px 0 22px;max-width:920px;color:#B7D9EA;font-size:clamp(18px,1.4vw,25px);line-height:1.3}.pillarCard{cursor:pointer;transition:transform .26s ease,border-color .26s ease,box-shadow .26s ease,background .26s ease}.pillarCard:focus-visible{outline:3px solid var(--pc);outline-offset:4px}.pillarCard:hover,.pillarCard:focus-visible{transform:translateY(-8px);border-color:color-mix(in srgb,var(--pc) 74%,white);box-shadow:0 30px 96px rgba(0,0,0,.48),0 0 44px color-mix(in srgb,var(--pc) 36%,transparent)}.pillarCard:active{transform:scale(.985)}.pillarCard .chev{position:absolute;right:18px;bottom:16px;width:46px;height:46px;display:grid;place-items:center;border-radius:16px;background:color-mix(in srgb,var(--pc) 22%,rgba(255,255,255,.08));border:1px solid color-mix(in srgb,var(--pc) 55%,transparent);color:#fff;font-size:30px;font-weight:900;box-shadow:0 0 28px color-mix(in srgb,var(--pc) 30%,transparent)}.pillarDetail{--pc:#16BDEB;position:relative;animation:detailIn .28s cubic-bezier(.2,.8,.2,1) both}.pillarDetail:before{content:"";position:absolute;inset:-18px -18px auto -18px;height:170px;border-radius:36px;background:radial-gradient(circle at 14% 12%,color-mix(in srgb,var(--pc) 46%,transparent),transparent 46%),linear-gradient(90deg,color-mix(in srgb,var(--pc) 35%,transparent),transparent);filter:blur(20px);opacity:.78;pointer-events:none}.pillarDetailHead{position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;border-radius:34px;border:1px solid color-mix(in srgb,var(--pc) 54%,rgba(255,255,255,.18));background:linear-gradient(135deg,color-mix(in srgb,var(--pc) 23%,rgba(255,255,255,.07)),rgba(255,255,255,.055));box-shadow:var(--shadow),0 0 54px color-mix(in srgb,var(--pc) 20%,transparent);padding:26px 30px;margin-bottom:22px}.pillarDetailHead:before{content:"";position:absolute;inset:0 0 auto;height:6px;background:linear-gradient(90deg,var(--pc),transparent)}.pillarDetailHead .icon{width:78px;height:78px;color:var(--pc);filter:drop-shadow(0 0 24px color-mix(in srgb,var(--pc) 64%,transparent));margin:0}.pillarDetailHead h3{font-size:clamp(38px,4.6vw,82px);line-height:.92;margin:0;color:#fff;letter-spacing:-.06em}.pillarLead{position:relative;margin:0 0 24px;color:#D7F4FF;font-size:clamp(22px,1.75vw,32px);line-height:1.24;font-weight:750}.pillarProducts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}.pillarProduct{min-height:118px;border-radius:26px;padding:20px 22px;border:1px solid color-mix(in srgb,var(--pc) 42%,rgba(255,255,255,.16));background:linear-gradient(145deg,color-mix(in srgb,var(--pc) 15%,rgba(255,255,255,.07)),rgba(255,255,255,.045));box-shadow:0 18px 56px rgba(0,0,0,.24);animation:productIn .34s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*55ms)}.productName{display:inline-flex;align-items:center;min-height:40px;padding:8px 14px;margin-bottom:12px;border-radius:999px;background:color-mix(in srgb,var(--pc) 24%,rgba(255,255,255,.09));border:1px solid color-mix(in srgb,var(--pc) 58%,transparent);color:#fff;font-size:clamp(17px,1.25vw,23px);font-weight:950}.whyLabel{display:block;margin-bottom:4px;color:var(--pc);font-size:13px;font-weight:950;text-transform:uppercase;letter-spacing:.16em}.pillarProduct p{margin:0;color:#CDEBFA;font-size:clamp(17px,1.18vw,22px);line-height:1.34}.pillarBack{margin-bottom:18px}.pillarBack .btn{min-height:62px}@keyframes detailIn{from{opacity:0;transform:translateX(22px);filter:blur(7px)}to{opacity:1;transform:none;filter:none}}@keyframes productIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}@media (max-width:1100px){.grid.five{grid-template-columns:repeat(3,1fr)}.resultHero,.resultGrid{grid-template-columns:1fr}.hero:after{opacity:.34}.pathCard{min-height:300px}.pillarProducts{grid-template-columns:1fr}}@media (max-width:760px){.app{padding:20px 16px}.grid.two,.grid.five,.grid.cards{grid-template-columns:1fr}.hero:before,.hero:after{display:none}h1{font-size:70px}.topbar{min-height:58px}.lang{height:56px}.card{min-height:190px}.footer{font-size:11px}.progress{font-size:11px;gap:6px}.resultHeader h2{font-size:44px}.pillarDetailHead{grid-template-columns:1fr}.pillarProducts{grid-template-columns:1fr}}
+    .pillarGrid{position:relative;display:block;min-height:680px;padding:4px 0 12px}.radialStage{--hub:#F8FAFC;position:relative;width:min(1120px,92vw);height:min(680px,62vh);min-height:620px;margin:0 auto;border-radius:48px;isolation:isolate;background:radial-gradient(circle at 50% 50%,rgba(248,250,252,.16),transparent 18%),radial-gradient(circle at 50% 50%,rgba(22,189,235,.14),transparent 48%),linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));border:1px solid rgba(157,222,255,.18);box-shadow:var(--shadow),inset 0 0 90px rgba(22,189,235,.06);overflow:hidden}.radialStage:before{content:"";position:absolute;left:50%;top:50%;width:min(760px,72%);aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);border:1px dashed rgba(125,220,255,.28);box-shadow:0 0 70px rgba(22,189,235,.12),inset 0 0 70px rgba(48,112,231,.08);animation:orbitPulse 5.2s ease-in-out infinite;pointer-events:none}.radialStage:after{content:"";position:absolute;inset:9%;border-radius:50%;background:conic-gradient(from 0deg,transparent,rgba(22,189,235,.18),transparent,rgba(48,112,231,.16),transparent);filter:blur(18px);opacity:.55;animation:ringDrift 24s linear infinite;pointer-events:none}.spokes{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}.spokes line{stroke:rgba(190,239,255,.34);stroke-width:.24;stroke-linecap:round;filter:drop-shadow(0 0 10px rgba(22,189,235,.5));stroke-dasharray:.8 1.2;animation:spokeFlow 7s linear infinite}.hubNode,.radialNode{appearance:none;font:inherit;position:absolute;z-index:3;display:grid;place-items:center;text-align:center;cursor:pointer;color:#fff;transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease,background .28s ease}.hubNode{left:50%;top:50%;width:210px;height:210px;transform:translate(-50%,-50%);border-radius:999px;border:1px solid rgba(248,250,252,.78);background:radial-gradient(circle at 35% 25%,rgba(255,255,255,.34),rgba(248,250,252,.10) 34%,rgba(48,112,231,.22) 72%,rgba(7,24,45,.88));box-shadow:0 0 0 12px rgba(248,250,252,.035),0 0 60px rgba(248,250,252,.30),0 0 100px rgba(22,189,235,.22),inset 0 1px 0 rgba(255,255,255,.35);padding:22px}.hubNode .icon{width:54px;height:54px;margin:0 0 8px;color:#F8FAFC;filter:drop-shadow(0 0 18px rgba(248,250,252,.65))}.hubNode b{font-size:46px;line-height:.9;letter-spacing:-.06em}.hubNode span{display:block;margin-top:8px;font-size:15px;line-height:1.1;color:#DCEBFA;font-weight:850;letter-spacing:.02em}.hubNode:hover,.hubNode:focus-visible{transform:translate(-50%,-50%) scale(1.045);border-color:#fff;box-shadow:0 0 0 16px rgba(248,250,252,.045),0 0 76px rgba(248,250,252,.42),0 0 118px rgba(22,189,235,.34)}.radialNode{--pc:#16BDEB;left:var(--x);top:var(--y);width:158px;min-height:124px;transform:translate(-50%,-50%);border-radius:28px;border:1px solid color-mix(in srgb,var(--pc) 62%,rgba(255,255,255,.2));background:radial-gradient(circle at 22% 15%,color-mix(in srgb,var(--pc) 42%,transparent),transparent 42%),linear-gradient(145deg,color-mix(in srgb,var(--pc) 20%,rgba(255,255,255,.08)),rgba(8,19,35,.78));box-shadow:0 18px 52px rgba(0,0,0,.38),0 0 34px color-mix(in srgb,var(--pc) 24%,transparent),inset 0 1px 0 rgba(255,255,255,.16);padding:15px 12px;animation:nodeIn .44s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*55ms)}.radialNode .icon{width:46px;height:46px;margin:0 0 10px;color:var(--pc);filter:drop-shadow(0 0 13px color-mix(in srgb,var(--pc) 68%,transparent))}.radialNode b{font-size:19px;line-height:1.03;letter-spacing:-.035em}.radialNode:hover,.radialNode:focus-visible{transform:translate(-50%,-50%) scale(1.075);border-color:color-mix(in srgb,var(--pc) 80%,white);box-shadow:0 24px 72px rgba(0,0,0,.48),0 0 48px color-mix(in srgb,var(--pc) 42%,transparent)}.radialNode:active,.hubNode:active{filter:brightness(1.08)}.hubDetail{--pc:#F8FAFC;position:relative;animation:detailIn .28s cubic-bezier(.2,.8,.2,1) both}.hubDetailHead{position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;border-radius:36px;border:1px solid rgba(248,250,252,.48);background:radial-gradient(circle at 8% 10%,rgba(248,250,252,.24),transparent 34%),linear-gradient(135deg,rgba(248,250,252,.14),rgba(22,189,235,.07));box-shadow:var(--shadow),0 0 64px rgba(248,250,252,.16);padding:30px;margin-bottom:24px}.hubDetailHead .icon{width:84px;height:84px;color:#F8FAFC;filter:drop-shadow(0 0 20px rgba(248,250,252,.55))}.hubDetailHead h3{margin:0;color:#fff;font-size:clamp(44px,4.8vw,86px);line-height:.86;letter-spacing:-.07em}.hubDetailHead p{margin:8px 0 0;color:#D9ECF8;font-size:clamp(18px,1.4vw,25px);font-weight:850}.hubLead{font-size:clamp(22px,1.7vw,31px);line-height:1.22;color:#F2F8FF;margin:0 0 18px;font-weight:800}.hubCopy{font-size:clamp(18px,1.25vw,23px);line-height:1.42;color:#C6DCEB;margin:0 0 24px}.frameworkChips{display:flex;flex-wrap:wrap;gap:14px}.frameworkChip{border-radius:999px;border:1px solid rgba(248,250,252,.38);background:linear-gradient(135deg,rgba(248,250,252,.15),rgba(22,189,235,.07));box-shadow:0 0 26px rgba(248,250,252,.10);padding:13px 18px;color:#fff;font-size:18px;font-weight:900}.radialFallback{display:none}.radialFallback .hubBanner,.radialFallback .pillarRow{appearance:none;font:inherit;color:#fff;width:100%;border-radius:28px;border:1px solid rgba(157,222,255,.24);background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.045));box-shadow:var(--shadow);padding:20px;margin-bottom:12px}.radialFallback .hubBanner{display:flex;align-items:center;gap:16px;border-color:rgba(248,250,252,.48)}.radialFallback .hubBanner .icon,.radialFallback .pillarRow .icon{width:42px;height:42px;flex:0 0 42px}.radialFallback .pillarRow{--pc:#16BDEB;display:flex;align-items:center;gap:14px;text-align:left;border-color:color-mix(in srgb,var(--pc) 54%,rgba(255,255,255,.18));background:linear-gradient(135deg,color-mix(in srgb,var(--pc) 20%,rgba(255,255,255,.07)),rgba(255,255,255,.045))}.radialFallback .pillarRow .icon{color:var(--pc)}@keyframes orbitPulse{50%{opacity:.62;transform:translate(-50%,-50%) scale(1.035)}}@keyframes ringDrift{to{transform:rotate(360deg)}}@keyframes spokeFlow{to{stroke-dashoffset:-8}}@keyframes nodeIn{from{opacity:0;transform:translate(-50%,-50%) scale(.78);filter:blur(8px)}to{opacity:1;transform:translate(-50%,-50%);filter:none}}@media (max-width:900px),(max-height:760px){.pillarGrid{min-height:0}.radialStage{display:none}.radialFallback{display:block;max-height:62vh;overflow:auto;padding-right:4px}.hubDetailHead{grid-template-columns:1fr}.hubDetailHead .icon{width:64px;height:64px}.hubDetailHead h3{font-size:46px}}
+  </style>
+</head>
+<body>
+  <canvas id="network" aria-hidden="true"></canvas><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div>
+  <main class="app" id="app"></main>
+  <div class="overlay" id="pillarOverlay" aria-hidden="true"></div>
+  <script>
+const BOOTH_DATA = {
+  meta: {
+    event: "Cisco AI Bridge · Cisco Connect Cancún 2026",
+    stage: "Stage 3 — Storytelling",
+    blueprint: { es: "Blueprint de Observabilidad", en: "Observability Blueprint" },
+    version: "2.0",
+  },
+
+  /* -------------------------------------------------------------------
+     CENTRAL HUB — ITSM (the 7 pillars revolve around it)
+     ------------------------------------------------------------------- */
+  hub: {
+    key: "ITSM",
+    name: { es: "ITSM", en: "ITSM" },
+    full: { es: "IT Service Management", en: "IT Service Management" },
+    color: "#F8FAFC", icon: "hub",
+    short: {
+      es: "El centro de la estrategia. ITIL y plataformas como ServiceNow o Jira gestionan el servicio; los 7 pilares giran a su alrededor entregándole telemetría, contexto y automatización.",
+      en: "The center of the strategy. ITIL and platforms like ServiceNow or Jira manage the service; the 7 pillars revolve around it delivering telemetry, context and automation.",
+    },
+    detail: {
+      es: "ITSM (IT Service Management) es el marco que organiza cómo se opera la tecnología. Tradicionalmente es reactivo: alguien abre un ticket cuando algo ya falló. En esta estrategia, los 7 pilares de observabilidad alimentan a ITSM de forma proactiva: ITSI + AIOps detectan la anomalía, correlacionan la causa raíz y abren automáticamente un ticket ya 'masticado' en ServiceNow o Jira, con toda la información técnica lista para el ingeniero. Así ITSM deja de ser el punto de partida del problema y se convierte en el punto de orquestación de la solución.",
+      en: "ITSM (IT Service Management) is the framework that organizes how technology is operated. Traditionally it's reactive: someone opens a ticket after something has already failed. In this strategy the 7 observability pillars feed ITSM proactively: ITSI + AIOps detect the anomaly, correlate root cause and automatically open a pre-digested ticket in ServiceNow or Jira, with all the technical information ready for the engineer. ITSM stops being the problem's starting point and becomes the orchestration point of the solution.",
+    },
+    frameworks: ["ITIL", "ServiceNow", "Jira", "Splunk ITSI"],
+  },
+
+  /* -------------------------------------------------------------------
+     7 OBSERVABILITY PILLARS (Full-Stack Observability)
+     ------------------------------------------------------------------- */
+  pillars: {
+    itops: {
+      key: "ITOps",
+      name: { es: "ITOps", en: "ITOps" },
+      short: {
+        es: "Salud de servicios, cómputo y Data Center: del servicio de negocio a la infraestructura física.",
+        en: "Service, compute and Data Center health: from business service down to physical infrastructure.",
+      },
+      color: "#16BDEB", icon: "eye",
+      products: [
+        { name: "Splunk IT Service Intelligence (ITSI)", why: {
+          es: "Monitoreo unificado que agrupa métricas de múltiples fuentes y mapea la salud de los servicios reales del negocio.",
+          en: "Unified monitoring that aggregates metrics from many sources and maps the health of real business services." } },
+        { name: "Cisco Intersight", why: {
+          es: "Operación de cómputo (UCS/servidores) con recomendaciones de IA y optimización de cargas.",
+          en: "Compute operations (UCS/servers) with AI recommendations and workload optimization." } },
+        { name: "Cisco Nexus Dashboard", why: {
+          es: "Operaciones y telemetría del Data Center (ACI / NX-OS); cierra la brecha de visibilidad entre el campus y el núcleo del DC.",
+          en: "Data Center operations and telemetry (ACI / NX-OS); closes the visibility gap between campus and the DC core." } },
+      ],
+    },
+    netops: {
+      key: "NetOps",
+      name: { es: "NetOps", en: "NetOps" },
+      short: {
+        es: "Operaciones de red de punta a punta: campus, sucursal, Data Center, Internet y nube.",
+        en: "End-to-end network operations: campus, branch, Data Center, Internet and cloud.",
+      },
+      color: "#3070E7", icon: "globe",
+      products: [
+        { name: "Cisco ThousandEyes", why: {
+          es: "Visibilidad de BGP, Internet y nube pública — la ruta completa que la red no controla.",
+          en: "BGP, Internet and public-cloud visibility — the full path the network doesn't control." } },
+        { name: "Cisco Catalyst Center", why: {
+          es: "Assurance y telemetría en streaming para redes de campus y sucursal.",
+          en: "Assurance and streaming telemetry for campus and branch networks." } },
+        { name: "Meraki Dashboard", why: {
+          es: "Visibilidad en la nube de red, dispositivos y experiencia en todas las sedes.",
+          en: "Cloud visibility of network, devices and experience across every site." } },
+        { name: "Cisco Nexus Dashboard", why: {
+          es: "Operaciones analíticas y telemetría de red en el Data Center.",
+          en: "Analytical operations and network telemetry in the Data Center." } },
+        { name: "Isovalent (Cilium)", why: {
+          es: "Observabilidad y conectividad a nivel de red nativa en la nube con eBPF (Hubble/Tetragon).",
+          en: "Cloud-native network observability and connectivity with eBPF (Hubble/Tetragon)." } },
+      ],
+    },
+    appops: {
+      key: "AppOps / CloudOps",
+      name: { es: "AppOps / CloudOps", en: "AppOps / CloudOps" },
+      short: {
+        es: "Operaciones de aplicaciones y nube: APM, trazas distribuidas, código, bases de datos y logs para DevOps.",
+        en: "Application and cloud operations: APM, distributed traces, code, databases and logs for DevOps.",
+      },
+      color: "#8B5CF6", icon: "code",
+      products: [
+        { name: "Splunk Observability Cloud", why: {
+          es: "APM, trazas distribuidas y métricas de Kubernetes, OTel-native, para entornos nativos de nube.",
+          en: "APM, distributed traces and Kubernetes metrics, OTel-native, for cloud-native environments." } },
+        { name: "Cisco AppDynamics", why: {
+          es: "Monitoreo profundo de código y bases de datos para aplicaciones tradicionales e híbridas.",
+          en: "Deep code and database monitoring for traditional and hybrid applications." } },
+        { name: "Splunk Log Observer", why: {
+          es: "Análisis de logs en tiempo real sin indexación pesada.",
+          en: "Real-time log analysis without heavy indexing." } },
+      ],
+    },
+    secops: {
+      key: "SecOps",
+      name: { es: "SecOps", en: "SecOps" },
+      short: {
+        es: "Detección y respuesta con IA, telemetría de identidad y seguridad de cargas cloud-native.",
+        en: "AI-driven detection and response, identity telemetry and cloud-native workload security.",
+      },
+      color: "#EF4444", icon: "shield-lock",
+      products: [
+        { name: "Splunk Enterprise Security", why: {
+          es: "SIEM con AI Assistant que correlaciona telemetría de seguridad y resume investigaciones.",
+          en: "SIEM with an AI Assistant that correlates security telemetry and summarizes investigations." } },
+        { name: "Cisco XDR", why: {
+          es: "Detección y respuesta multi-dominio con investigación de IA agéntica.",
+          en: "Cross-domain detection and response with agentic-AI investigation." } },
+        { name: "Cisco ISE", why: {
+          es: "Telemetría de identidad y control de acceso 802.1X que enriquece la detección.",
+          en: "Identity telemetry and 802.1X access control that enriches detection." } },
+        { name: "Cisco Panoptica (CNAPP)", why: {
+          es: "Protege el ciclo de vida completo de las aplicaciones nativas en la nube (de código a nube).",
+          en: "Protects the full lifecycle of cloud-native applications (code-to-cloud)." } },
+        { name: "Cisco Secure Application (en AppDynamics)", why: {
+          es: "Seguridad a nivel de código en tiempo de ejecución, integrada en AppDynamics.",
+          en: "Runtime code-level security, integrated into AppDynamics." } },
+        { name: "Splunk SOAR", why: {
+          es: "Orquestación y automatización de respuesta con playbooks.",
+          en: "Security orchestration and automated response with playbooks." } },
+      ],
+    },
+    aiops: {
+      key: "AIOps",
+      name: { es: "AIOps", en: "AIOps" },
+      short: {
+        es: "El cerebro analítico: líneas base dinámicas, correlación de eventos, reducción de ruido y auto-remediación predictiva.",
+        en: "The analytical brain: dynamic baselines, event correlation, noise reduction and predictive auto-remediation.",
+      },
+      color: "#00C8FF", icon: "radar",
+      products: [
+        { name: "Splunk ITSI — Predictive Analytics & Adaptive Thresholding", why: {
+          es: "Líneas base dinámicas y análisis predictivo que avisan minutos u horas antes de una caída.",
+          en: "Dynamic baselines and predictive analytics that warn minutes or hours before an outage." } },
+        { name: "Splunk Machine Learning Toolkit (MLTK)", why: {
+          es: "Modelos de ML para detección de anomalías, pronóstico y clustering sobre datos operativos.",
+          en: "ML models for anomaly detection, forecasting and clustering over operational data." } },
+        { name: "Cisco Observability Platform (FSO)", why: {
+          es: "El motor de extensibilidad que unifica y correlaciona la observabilidad full-stack.",
+          en: "The extensibility engine that unifies and correlates full-stack observability." } },
+        { name: "Splunk SOAR — Auto-remediation Playbooks", why: {
+          es: "Activa scripts de auto-reparación (p.ej. asignar RAM o reiniciar un microservicio) sin intervención humana.",
+          en: "Triggers self-healing scripts (e.g. add RAM or restart a microservice) with no human intervention." } },
+        { name: "Cisco AIOps (Catalyst Center & Meraki)", why: {
+          es: "Predice comportamientos de red y resuelve problemas de desempeño en mucho menos tiempo.",
+          en: "Predicts network behavior and resolves performance issues in much less time." } },
+      ],
+    },
+    mlops: {
+      key: "MLOps",
+      name: { es: "MLOps", en: "MLOps" },
+      short: {
+        es: "Operar, monitorear y gobernar modelos de IA en producción — tokens, LLMs, GPUs, desempeño y drift.",
+        en: "Operate, monitor and govern AI models in production — tokens, LLMs, GPUs, performance and drift.",
+      },
+      color: "#22C55E", icon: "branch",
+      products: [
+        { name: "Splunk Observability for AI", why: {
+          es: "Diseñado para monitorear el consumo de tokens, el rendimiento de LLMs y la infraestructura de GPUs.",
+          en: "Purpose-built to monitor token consumption, LLM performance and GPU infrastructure." } },
+        { name: "Splunk Machine Learning Toolkit (MLTK)", why: {
+          es: "Entrena, valida y operacionaliza modelos de ML directamente sobre los datos de Splunk.",
+          en: "Trains, validates and operationalizes ML models directly on Splunk data." } },
+        { name: "Cisco AI Defense — Model Validation", why: {
+          es: "Valida y hace red-teaming de los modelos que operas — el puente con el Blueprint de Seguridad.",
+          en: "Validates and red-teams the models you operate — the bridge to the Security Blueprint." } },
+        { name: "OpenTelemetry", why: {
+          es: "Estándar abierto de telemetría para instrumentar pipelines de ML; Splunk Observability es OTel-native.",
+          en: "Open telemetry standard to instrument ML pipelines; Splunk Observability is OTel-native." } },
+      ],
+    },
+    bizops: {
+      key: "BizOps",
+      name: { es: "BizOps", en: "BizOps" },
+      short: {
+        es: "Conecta la telemetría técnica con los KPIs de negocio y demuestra el ROI de la observabilidad.",
+        en: "Connects technical telemetry to business KPIs and proves the ROI of observability.",
+      },
+      color: "#FF9000", icon: "grid",
+      products: [
+        { name: "AppDynamics Business iQ", why: {
+          es: "Inyecta telemetría técnica directamente en KPIs de negocio (p.ej. cómo la latencia afecta la tasa de conversión).",
+          en: "Injects technical telemetry directly into business KPIs (e.g. how latency affects conversion rate)." } },
+        { name: "Splunk ITSI — Business Service Insights", why: {
+          es: "Mapeo de alto nivel sobre la salud de los servicios críticos del negocio.",
+          en: "High-level mapping of the health of the business's critical services." } },
+      ],
+    },
+  },
+
+  /* -------------------------------------------------------------------
+     SHOWCASE BOOTHS
+     ------------------------------------------------------------------- */
+  booths: {
+    // ------- Networking (Juan Cervantes) -------
+    nw_unified: {
+      campus: "Networking",
+      name: { es: "Networking · Unified Secure Networking", en: "Networking · Unified Secure Networking" },
+      focus: { es: "Red segura unificada: identidad, política y visibilidad como una sola capa.",
+               en: "Unified secure networking: identity, policy and visibility as one layer." },
+      products: [],
+    },
+    nw_smart_access: {
+      campus: "Networking",
+      name: { es: "Networking · Smart Access", en: "Networking · Smart Access" },
+      focus: { es: "Acceso basado en identidad (802.1X, TrustSec) en campus y sucursal.",
+               en: "Identity-based access (802.1X, TrustSec) across campus and branch." },
+      products: [],
+    },
+    nw_secure_wan: {
+      campus: "Networking",
+      name: { es: "Networking · Secure WAN", en: "Networking · Secure WAN" },
+      focus: { es: "SD-WAN + SASE con Zero Trust integrado desde el borde.",
+               en: "SD-WAN + SASE with Zero Trust integrated from the edge." },
+      products: [],
+    },
+    nw_smart_retail: {
+      campus: "Networking",
+      name: { es: "Networking · Smart Retail", en: "Networking · Smart Retail" },
+      focus: { es: "Conectividad y visibilidad para el piso de venta y el POS.",
+               en: "Connectivity and visibility for the sales floor and POS." },
+      products: [],
+    },
+    nw_smart_spaces: {
+      campus: "Networking",
+      name: { es: "Networking · Smart Spaces", en: "Networking · Smart Spaces" },
+      focus: { es: "Ocupación, calidad del aire y experiencia con Wi-Fi como sensor.",
+               en: "Occupancy, air quality and experience with Wi-Fi as a sensor." },
+      products: [],
+    },
+
+    // ------- Security (Flavio Correa) -------
+    sec_zta: {
+      campus: "Security",
+      name: { es: "Security · Zero Trust Access", en: "Security · Zero Trust Access" },
+      focus: { es: "ZTNA con acceso basado en identidad para usuarios, dispositivos y agentes.",
+               en: "ZTNA with identity-based access for users, devices and agents." },
+      products: [],
+    },
+    sec_hmf: {
+      campus: "Security",
+      name: { es: "Security · Hybrid Mesh Firewall", en: "Security · Hybrid Mesh Firewall" },
+      focus: { es: "Perímetro consistente en Data Center, nube y sucursal.",
+               en: "Consistent perimeter across Data Center, cloud and branch." },
+      products: [],
+    },
+    sec_ifs: {
+      campus: "Security",
+      name: { es: "Security · Identity First Security", en: "Security · Identity First Security" },
+      focus: { es: "Duo, ISE e Identity Intelligence — identidad como primer control.",
+               en: "Duo, ISE and Identity Intelligence — identity as the first control." },
+      products: [],
+    },
+    sec_scc: {
+      campus: "Security",
+      name: { es: "Security · Security Cloud Control", en: "Security · Security Cloud Control" },
+      focus: { es: "Plano único de gestión y política para todo el portafolio de seguridad.",
+               en: "Single management and policy plane for the whole security portfolio." },
+      products: [],
+    },
+    sec_ai: {
+      campus: "Security",
+      name: { es: "Security · AI Security", en: "Security · AI Security" },
+      focus: { es: "Cisco AI Defense — guardrails, Shadow AI y validación de modelos.",
+               en: "Cisco AI Defense — guardrails, Shadow AI and model validation." },
+      products: [],
+    },
+    sec_aiwork: {
+      campus: "Security",
+      name: { es: "Security · Security & Observability for AI Workloads", en: "Security · Security & Observability for AI Workloads" },
+      focus: { es: "Seguridad y observabilidad para cargas de IA de punta a punta.",
+               en: "End-to-end security and observability for AI workloads." },
+      products: [],
+    },
+
+    // ------- CAI · Cloud & AI Infrastructure (Carlos Rubio) -------
+    cai_edge_holo: {
+      campus: "CAI",
+      name: { es: "CAI · Unified Edge - Holograma", en: "CAI · Unified Edge - Holograma" },
+      focus: { es: "Unified Edge en vivo — edge computing convergente demostrado con holograma.",
+               en: "Unified Edge live — converged edge computing demonstrated with a hologram." },
+      products: [],
+    },
+    cai_edge: {
+      campus: "CAI",
+      name: { es: "CAI · Unify edge", en: "CAI · Unify edge" },
+      focus: { es: "Cómputo, red y datos como una sola plataforma en el borde.",
+               en: "Compute, network and data as a single platform at the edge." },
+      products: [],
+    },
+    cai_ndb: {
+      campus: "CAI",
+      name: { es: "CAI · Data Center Networking with Nexus Dashboard", en: "CAI · Data Center Networking with Nexus Dashboard" },
+      focus: { es: "Telemetría y assurance del Data Center (ACI / NX-OS).",
+               en: "Data Center telemetry and assurance (ACI / NX-OS)." },
+      products: [],
+    },
+    cai_hyperfabric: {
+      campus: "CAI",
+      name: { es: "CAI · Scaling multi-agent systems / Hyperfabric / Secure IA Factory", en: "CAI · Scaling multi-agent systems / Hyperfabric / Secure IA Factory" },
+      focus: { es: "Cisco Secure AI Factory (con NVIDIA) para sistemas multi-agente a escala.",
+               en: "Cisco Secure AI Factory (with NVIDIA) for multi-agent systems at scale." },
+      products: [],
+    },
+    cai_stack: {
+      campus: "CAI",
+      name: { es: "CAI · Stack Automation", en: "CAI · Stack Automation" },
+      focus: { es: "Infraestructura como código con Intersight y automatización full-stack.",
+               en: "Infrastructure as code with Intersight and full-stack automation." },
+      products: [],
+    },
+    cai_smartsw: {
+      campus: "CAI",
+      name: { es: "CAI · Smart switch", en: "CAI · Smart switch" },
+      focus: { es: "Cisco Smart Switch (N9300): enforcement y observabilidad en el silicio.",
+               en: "Cisco Smart Switch (N9300): silicon-embedded enforcement and observability." },
+      products: [],
+    },
+    cai_compute: {
+      campus: "CAI",
+      name: { es: "CAI · Compute / Intersight /unify edge / hiperconvergencia /AI", en: "CAI · Compute / Intersight /unify edge / hiperconvergencia /AI" },
+      focus: { es: "Cómputo GPU-ready, hiperconvergencia y operación como código.",
+               en: "GPU-ready compute, hyperconvergence and management as code." },
+      products: [],
+    },
+
+    // ------- Collaboration (Arturo Prieto & Vero Diaz) -------
+    col_exec: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Executive Room (Mezzanine)", en: "Collaboration · Executive Room (Mezzanine)" },
+      focus: { es: "Sala ejecutiva Webex: reuniones inmersivas de alto nivel.",
+               en: "Webex executive room: high-end immersive meetings." },
+      products: [],
+    },
+    col_connect: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Connect Room", en: "Collaboration · Connect Room" },
+      focus: { es: "Colaboración híbrida con Webex Rooms.",
+               en: "Hybrid collaboration with Webex Rooms." },
+      products: [],
+    },
+    col_interop: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Interoperability", en: "Collaboration · Interoperability" },
+      focus: { es: "Interoperabilidad Webex con MS Teams, Zoom y salas de terceros.",
+               en: "Webex interop with MS Teams, Zoom and third-party rooms." },
+      products: [],
+    },
+    col_contact: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Webex Contact Center", en: "Collaboration · Webex Contact Center" },
+      focus: { es: "Contact center en la nube con IA integrada.",
+               en: "Cloud contact center with integrated AI." },
+      products: [],
+    },
+    col_calling: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Webex Calling & Webex Suite", en: "Collaboration · Webex Calling & Webex Suite" },
+      focus: { es: "Telefonía y colaboración en la nube.",
+               en: "Cloud telephony and collaboration." },
+      products: [],
+    },
+    col_workspaces: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Smart Workspaces", en: "Collaboration · Smart Workspaces" },
+      focus: { es: "Espacios de trabajo inteligentes con Webex y Meraki.",
+               en: "Intelligent workspaces with Webex and Meraki." },
+      products: [],
+    },
+
+    // ------- ThousandEyes (Carlos Venegas) -------
+    te_agentic: {
+      campus: "ThousandEyes",
+      name: { es: "ThousandEyes · ThousandEyes Agentic Operations", en: "ThousandEyes · ThousandEyes Agentic Operations" },
+      focus: { es: "Agentes de IA para observabilidad de red autónoma.",
+               en: "AI agents for autonomous network observability." },
+      products: [],
+    },
+    te_insights: {
+      campus: "ThousandEyes",
+      name: { es: "ThousandEyes · Traffic Insights, Cloud Insights", en: "ThousandEyes · Traffic Insights, Cloud Insights" },
+      focus: { es: "Visibilidad de flujos y de nube pública de punta a punta.",
+               en: "End-to-end flow and public-cloud visibility." },
+      products: [],
+    },
+    te_assurance: {
+      campus: "ThousandEyes",
+      name: { es: "ThousandEyes · Cisco Architectures + Network Assurance", en: "ThousandEyes · Cisco Architectures + Network Assurance" },
+      focus: { es: "Assurance de red integral sobre las arquitecturas Cisco.",
+               en: "End-to-end network assurance over Cisco architectures." },
+      products: [],
+    },
+
+    // ------- Observability (Cleber) -------
+    obs_agent: {
+      campus: "Observability",
+      name: { es: "Observability · Agent Observability", en: "Observability · Agent Observability" },
+      focus: { es: "Monitoreo del comportamiento y desempeño de agentes de IA.",
+               en: "Monitoring behavior and performance of AI agents." },
+      products: [],
+    },
+    obs_itsi: {
+      campus: "Observability",
+      name: { es: "Observability · Splunk ITSI", en: "Observability · Splunk ITSI" },
+      focus: { es: "Splunk IT Service Intelligence: AIOps y salud de servicios.",
+               en: "Splunk IT Service Intelligence: AIOps and service health." },
+      products: [],
+    },
+    obs_cloud: {
+      campus: "Observability",
+      name: { es: "Observability · Splunk Observability Cloud", en: "Observability · Splunk Observability Cloud" },
+      focus: { es: "APM, trazas distribuidas y métricas de Kubernetes OTel-native.",
+               en: "APM, distributed traces and Kubernetes metrics, OTel-native." },
+      products: [],
+    },
+    obs_datafabric: {
+      campus: "Observability",
+      name: { es: "Observability · Cisco Data Fabric", en: "Observability · Cisco Data Fabric" },
+      focus: { es: "Capa unificada de datos para observabilidad full-stack.",
+               en: "Unified data layer for full-stack observability." },
+      products: [],
+    },
+
+    // ------- Service Providers (Christian Calixto) -------
+    sp_agile: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · End to End Agile Services Networking", en: "Service Providers · End to End Agile Services Networking" },
+      focus: { es: "Agile Services Networking de punta a punta para operadores.",
+               en: "End-to-end Agile Services Networking for operators." },
+      products: [],
+    },
+    sp_siliconone: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · Sillicon One Platforms and RON transceivers", en: "Service Providers · Sillicon One Platforms and RON transceivers" },
+      focus: { es: "Silicon One y transceivers RON: escala para IA y backbone.",
+               en: "Silicon One and RON transceivers: AI and backbone scale." },
+      products: [],
+    },
+    sp_ai_conn: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · Scale Connectivity for AI: Cisco Routed Networking and SRv6", en: "Service Providers · Scale Connectivity for AI: Cisco Routed Networking and SRv6" },
+      focus: { es: "Cisco Routed Networking y SRv6 para conectividad de IA a escala.",
+               en: "Cisco Routed Networking and SRv6 for AI connectivity at scale." },
+      products: [],
+    },
+    sp_agentic: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · Service Providers Agentic Operations", en: "Service Providers · Service Providers Agentic Operations" },
+      focus: { es: "Operación autónoma con agentes de IA para el operador.",
+               en: "Autonomous operations with AI agents for operators." },
+      products: [],
+    },
+    sp_security: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · Cisco Service Provider Security", en: "Service Providers · Cisco Service Provider Security" },
+      focus: { es: "Protección de la infraestructura del operador.",
+               en: "Operator infrastructure protection." },
+      products: [],
+    },
+
+    // ------- Industrial IOT (Fayce) -------
+    iot_cybervision: {
+      campus: "Industrial IOT",
+      name: { es: "Industrial IOT · Cisco Cyber Vision - Industrial Segmentation & Remote Access", en: "Industrial IOT · Cisco Cyber Vision - Industrial Segmentation & Remote Access" },
+      focus: { es: "Cisco Cyber Vision: segmentación industrial y acceso remoto seguro.",
+               en: "Cisco Cyber Vision: industrial segmentation and secure remote access." },
+      products: [],
+    },
+    iot_ie: {
+      campus: "Industrial IOT",
+      name: { es: "Industrial IOT · Cisco Industrial Switches on Meraki Dashboard", en: "Industrial IOT · Cisco Industrial Switches on Meraki Dashboard" },
+      focus: { es: "Switches industriales Cisco gestionados desde Meraki Dashboard.",
+               en: "Cisco industrial switches managed from Meraki Dashboard." },
+      products: [],
+    },
+    iot_utilities: {
+      campus: "Industrial IOT",
+      name: { es: "Industrial IOT · Win utilities: Scale and manage grid networks", en: "Industrial IOT · Win utilities: Scale and manage grid networks" },
+      focus: { es: "Escala y gestión de redes de servicios públicos (utilities).",
+               en: "Scale and manage utility grid networks." },
+      products: [],
+    },
+  },
+
+
+  /* -------------------------------------------------------------------
+     INDUSTRIES × USE CASES  with OBSERVABILITY mapping (7-pillar)
+     ------------------------------------------------------------------- */
+  industries: {
+    retail: {
+      name: { es: "Retail", en: "Retail" }, icon: "cart",
+      tagline: { es: "Experiencia de compra siempre disponible, del clic al pago.", en: "Always-on shopping experience, from click to checkout." },
+      useCases: [
+        {
+          id: "retail-peak",
+          title: { es: "Disponibilidad del e-commerce en picos (Black Friday)", en: "E-commerce availability at peak (Black Friday)" },
+          desc: { es: "Los picos de tráfico saturan el checkout y degradan la experiencia justo cuando más ventas hay.",
+                   en: "Traffic spikes saturate checkout and degrade experience exactly when sales peak." },
+          securityChallenge: {
+            es: "Las alertas estáticas no ven la anomalía temprana: un aumento leve de latencia a la hora pico no dispara umbrales fijos pero anticipa una caída y golpea la conversión.",
+            en: "Static alerts miss the early anomaly: a small latency rise at peak hour doesn't trip fixed thresholds but foreshadows an outage and hurts conversion." },
+          pillars: ["aiops", "appops", "bizops"],
+          products: ["Splunk IT Service Intelligence (ITSI)", "Splunk Observability Cloud", "AppDynamics Business iQ", "Splunk SOAR"],
+          booths: ["obs_itsi", "obs_cloud", "obs_datafabric"],
+          recommendation: {
+            es: "ITSI aprende la línea base dinámica del checkout y detecta la anomalía temprana; Business iQ traduce la latencia en impacto de conversión y un playbook de SOAR escala capacidad antes de la caída.",
+            en: "ITSI learns the dynamic baseline of checkout and catches the early anomaly; Business iQ turns latency into conversion impact and a SOAR playbook scales capacity before the outage." },
+        },
+        {
+          id: "retail-omnichannel",
+          title: { es: "Experiencia digital omnicanal", en: "Omnichannel digital experience" },
+          desc: { es: "Web, app móvil y pasarelas de pago de terceros deben sentirse instantáneas en todo canal.",
+                   en: "Web, mobile app and third-party payment gateways must feel instant across every channel." },
+          securityChallenge: {
+            es: "La lentitud suele venir de servicios SaaS y rutas de Internet que el retailer no controla ni ve.",
+            en: "Slowness often comes from SaaS services and Internet paths the retailer neither controls nor sees." },
+          pillars: ["appops", "netops"],
+          products: ["Cisco AppDynamics", "Cisco ThousandEyes", "Splunk Observability Cloud"],
+          booths: ["obs_cloud", "te_insights"],
+          recommendation: {
+            es: "AppDynamics correlaciona la transacción de negocio con el código y ThousandEyes ilumina la ruta de Internet/SaaS de punta a punta.",
+            en: "AppDynamics correlates the business transaction with the code and ThousandEyes lights up the Internet/SaaS path end to end." },
+        },
+        {
+          id: "retail-stores",
+          title: { es: "Salud de tiendas y punto de venta (POS/IoT)", en: "Store and point-of-sale health (POS/IoT)" },
+          desc: { es: "Cientos de tiendas con POS, Wi-Fi e IoT que deben operar sin interrupción.",
+                   en: "Hundreds of stores with POS, Wi-Fi and IoT that must run without interruption." },
+          securityChallenge: {
+            es: "Sin visibilidad centralizada, cada tienda es un silo y los problemas de red se detectan cuando el cliente ya se fue.",
+            en: "Without centralized visibility every store is a silo and network issues surface only after the customer has left." },
+          pillars: ["netops", "itops"],
+          products: ["Meraki Dashboard", "Cisco Catalyst Center", "Splunk IT Service Intelligence (ITSI)"],
+          booths: ["te_assurance", "obs_itsi"],
+          recommendation: {
+            es: "Meraki + Catalyst Center dan salud de red por tienda y ITSI agrupa todo bajo el impacto al servicio de negocio.",
+            en: "Meraki + Catalyst Center give per-store network health and ITSI rolls it up under business-service impact." },
+        },
+        {
+          id: "retail-secops",
+          title: { es: "Seguridad de operaciones digitales", en: "Digital operations security" },
+          desc: { es: "Fraude y amenazas en canales digitales que crecen con el volumen de ventas.",
+                   en: "Fraud and threats on digital channels that grow with sales volume." },
+          securityChallenge: {
+            es: "Miles de alertas de seguridad diarias generan fatiga y ocultan el incidente real.",
+            en: "Thousands of daily security alerts create fatigue and hide the real incident." },
+          pillars: ["secops", "aiops"],
+          products: ["Splunk Enterprise Security", "Cisco XDR", "Cisco Panoptica (CNAPP)", "Splunk SOAR"],
+          booths: ["sec_aiwork"],
+          recommendation: {
+            es: "Splunk ES correlaciona la telemetría, XDR investiga con IA agéntica, Panoptica protege las apps cloud-native y SOAR automatiza la contención.",
+            en: "Splunk ES correlates telemetry, XDR investigates with agentic AI, Panoptica protects cloud-native apps and SOAR automates containment." },
+        },
+        {
+          id: "retail-mlops",
+          title: { es: "Modelos de recomendación y pricing en producción", en: "Recommendation & pricing models in production" },
+          desc: { es: "La personalización y el pricing dinámico dependen de modelos que deben mantenerse precisos.",
+                   en: "Personalization and dynamic pricing rely on models that must stay accurate." },
+          securityChallenge: {
+            es: "El drift del modelo degrada silenciosamente las recomendaciones y los márgenes sin que nadie lo note.",
+            en: "Model drift silently degrades recommendations and margins with no one noticing." },
+          pillars: ["mlops", "bizops"],
+          products: ["Splunk Machine Learning Toolkit (MLTK)", "Splunk Observability for AI", "Cisco AI Defense — Model Validation"],
+          booths: ["obs_cloud", "obs_datafabric"],
+          recommendation: {
+            es: "MLTK + Splunk Observability for AI monitorean desempeño, drift y consumo del modelo; AI Defense valida su integridad y BizOps mide el impacto en margen.",
+            en: "MLTK + Splunk Observability for AI monitor model performance, drift and consumption; AI Defense validates its integrity and BizOps measures margin impact." },
+        },
+      ],
+    },
+
+    financial: {
+      name: { es: "Servicios Financieros", en: "Financial Services" }, icon: "bank",
+      tagline: { es: "Cero downtime y detección predictiva a escala de transacción.", en: "Zero downtime and predictive detection at transaction scale." },
+      useCases: [
+        {
+          id: "fin-paygw",
+          title: { es: "Salud preventiva de la pasarela de pagos (Black Friday)", en: "Preventive health of the payment gateway (Black Friday)" },
+          desc: { es: "Un día de alta demanda: la plataforma debe sostenerse sin que ningún cliente experimente un error al pagar.",
+                   en: "A high-demand day: the platform must hold without a single customer hitting a payment error." },
+          securityChallenge: {
+            es: "A las 2:00 PM la latencia sube de 100ms a 150ms — invisible para umbrales estáticos de 500ms, pero anticipa un colapso de la base de datos a las 2:30 PM.",
+            en: "At 2:00 PM latency rises from 100ms to 150ms — invisible to static 500ms thresholds, yet it foreshadows a database collapse at 2:30 PM." },
+          pillars: ["aiops", "itops", "bizops"],
+          products: ["Splunk IT Service Intelligence (ITSI)", "Splunk Machine Learning Toolkit (MLTK)", "Splunk SOAR", "AppDynamics Business iQ"],
+          booths: ["obs_itsi", "obs_cloud", "obs_datafabric"],
+          recommendation: {
+            es: "AIOps nota la anomalía silenciosa, correlaciona la causa raíz (RAM saturada por un microservicio de descuentos mal optimizado) en un solo incidente, avisa con 22 min de anticipación y ejecuta un playbook de auto-remediación (asignar RAM + reiniciar el microservicio). A diferencia del ITSM reactivo (esperar el ticket), ITSI + AIOps es proactivo y hasta abre el ticket ya 'masticado' en ServiceNow/Jira. Con Business iQ el impacto se mide en pesos. ROI reportado: 387% a 3 años, payback en 13 meses y $15.3M de beneficio anual.",
+            en: "AIOps spots the silent anomaly, correlates root cause (RAM exhausted by a poorly optimized discount microservice) into a single incident, warns 22 min ahead and runs an auto-remediation playbook (add RAM + restart the microservice). Unlike reactive ITSM (wait for the ticket), ITSI + AIOps is proactive and even opens the ticket pre-digested in ServiceNow/Jira. With Business iQ the impact is measured in dollars. Reported ROI: 387% over 3 years, 13-month payback and $15.3M annual benefit." },
+        },
+        {
+          id: "fin-fraud",
+          title: { es: "Detección de fraude en tiempo real", en: "Real-time fraud detection" },
+          desc: { es: "Millones de transacciones por segundo donde cada milisegundo y cada patrón cuentan.",
+                   en: "Millions of transactions per second where every millisecond and every pattern count." },
+          securityChallenge: {
+            es: "Los patrones de fraude se esconden en el ruido; las reglas estáticas los pierden o generan demasiados falsos positivos.",
+            en: "Fraud patterns hide in the noise; static rules miss them or generate too many false positives." },
+          pillars: ["secops", "aiops"],
+          products: ["Splunk Enterprise Security", "Splunk Machine Learning Toolkit (MLTK)", "Cisco XDR", "Cisco ISE"],
+          booths: ["sec_aiwork", "obs_itsi"],
+          recommendation: {
+            es: "Splunk ES + MLTK modelan el comportamiento normal y detectan la desviación al instante; ISE aporta contexto de identidad y XDR investiga y responde en segundos.",
+            en: "Splunk ES + MLTK model normal behavior and detect deviation instantly; ISE adds identity context and XDR investigates and responds in seconds." },
+        },
+        {
+          id: "fin-compliance",
+          title: { es: "Cumplimiento y auditoría continua", en: "Compliance and continuous audit" },
+          desc: { es: "CNBV, Banxico y NOM-151 exigen evidencia, trazabilidad e inmutabilidad de registros.",
+                   en: "CNBV, Banxico and NOM-151 demand evidence, traceability and record immutability." },
+          securityChallenge: {
+            es: "Reunir evidencia de cumplimiento a mano es lento, propenso a error y difícil de sostener en auditoría.",
+            en: "Gathering compliance evidence by hand is slow, error-prone and hard to sustain under audit." },
+          pillars: ["secops", "itops"],
+          products: ["Splunk Enterprise Security", "Splunk IT Service Intelligence (ITSI)"],
+          booths: ["sec_aiwork"],
+          recommendation: {
+            es: "Splunk ES genera reportes de cumplimiento e inmutabilidad de índices; ITSI da la salud del servicio para las métricas de continuidad.",
+            en: "Splunk ES generates compliance reports and index immutability; ITSI provides service health for continuity metrics." },
+        },
+        {
+          id: "fin-mobile",
+          title: { es: "Experiencia de banca digital y móvil", en: "Digital and mobile banking experience" },
+          desc: { es: "La app y el portal deben responder al instante en cualquier red y dispositivo.",
+                   en: "The app and portal must respond instantly on any network and device." },
+          securityChallenge: {
+            es: "Cuando el cliente reporta lentitud, el problema puede estar en la app, la nube o el proveedor de Internet.",
+            en: "When the customer reports slowness, the problem may live in the app, the cloud or the ISP." },
+          pillars: ["appops", "netops"],
+          products: ["Cisco AppDynamics", "Cisco ThousandEyes", "Splunk Observability Cloud"],
+          booths: ["obs_cloud", "te_insights"],
+          recommendation: {
+            es: "AppDynamics correlaciona la transacción de negocio con el código y ThousandEyes aísla si la culpa es de la red/Internet.",
+            en: "AppDynamics correlates the business transaction with the code and ThousandEyes isolates whether the network/Internet is to blame." },
+        },
+        {
+          id: "fin-riskmodels",
+          title: { es: "Modelos de scoring y riesgo en producción", en: "Scoring and risk models in production" },
+          desc: { es: "Los modelos de crédito y riesgo deben mantenerse precisos, explicables y auditables.",
+                   en: "Credit and risk models must stay accurate, explainable and auditable." },
+          securityChallenge: {
+            es: "Un modelo que sufre drift puede aprobar riesgo indebido o rechazar buenos clientes sin señal visible.",
+            en: "A drifting model can approve undue risk or reject good customers with no visible signal." },
+          pillars: ["mlops", "secops"],
+          products: ["Splunk Machine Learning Toolkit (MLTK)", "Splunk Observability for AI", "Cisco AI Defense — Model Validation"],
+          booths: ["obs_cloud", "sec_aiwork"],
+          recommendation: {
+            es: "MLTK + Splunk Observability for AI vigilan desempeño y drift; AI Defense valida y hace red-teaming para mantener la confianza del modelo.",
+            en: "MLTK + Splunk Observability for AI watch performance and drift; AI Defense validates and red-teams to keep model trust." },
+        },
+      ],
+    },
+
+    distribution: {
+      name: { es: "Centros de Distribución", en: "Distribution Centers" }, icon: "box",
+      tagline: { es: "Operación logística visible y predecible, 24/7.", en: "Logistics operations visible and predictable, 24/7." },
+      useCases: [
+        {
+          id: "dist-wms",
+          title: { es: "Salud del WMS y sistemas de automatización", en: "WMS and automation systems health" },
+          desc: { es: "El sistema de gestión de almacén orquesta picking, packing y despacho en tiempo real.",
+                   en: "The warehouse management system orchestrates picking, packing and dispatch in real time." },
+          securityChallenge: {
+            es: "Una degradación del WMS frena toda la operación física y se propaga a bandas, robots y despacho.",
+            en: "A WMS degradation halts the whole physical operation and cascades to conveyors, robots and dispatch." },
+          pillars: ["itops", "appops", "aiops"],
+          products: ["Splunk IT Service Intelligence (ITSI)", "Cisco AppDynamics", "Splunk Observability Cloud"],
+          booths: ["obs_itsi", "obs_cloud"],
+          recommendation: {
+            es: "ITSI mapea el WMS como servicio de negocio, AppDynamics ve el código y con AIOps se predice la degradación antes del paro físico.",
+            en: "ITSI maps the WMS as a business service, AppDynamics sees the code and with AIOps degradation is predicted before the physical stop." },
+        },
+        {
+          id: "dist-otnet",
+          title: { es: "Red OT/IoT del almacén (robots y sensores)", en: "Warehouse OT/IoT network (robots and sensors)" },
+          desc: { es: "AGVs, AMRs y miles de sensores dependen de una red inalámbrica confiable.",
+                   en: "AGVs, AMRs and thousands of sensors depend on a reliable wireless network." },
+          securityChallenge: {
+            es: "Un 'hot spot' de congestión inalámbrica detiene robots sin una causa evidente para el operador.",
+            en: "A wireless congestion 'hot spot' stops robots with no obvious cause for the operator." },
+          pillars: ["netops"],
+          products: ["Meraki Dashboard", "Cisco Catalyst Center", "Cisco Nexus Dashboard"],
+          booths: ["te_assurance"],
+          recommendation: {
+            es: "Meraki + Catalyst Center exponen la congestión a nivel granular y correlacionan el impacto en la operación en tiempo real.",
+            en: "Meraki + Catalyst Center expose congestion at a granular level and correlate the operational impact in real time." },
+        },
+        {
+          id: "dist-pdm",
+          title: { es: "Mantenimiento predictivo de bandas y equipos", en: "Predictive maintenance of conveyors and equipment" },
+          desc: { es: "Sensores de vibración y calor anticipan fallas mecánicas antes de que paren la línea.",
+                   en: "Vibration and heat sensors anticipate mechanical failures before they stop the line." },
+          securityChallenge: {
+            es: "Los datos de sensores son masivos; sin ML es imposible ver la señal de falla entre el ruido.",
+            en: "Sensor data is massive; without ML it's impossible to see the failure signal in the noise." },
+          pillars: ["aiops", "mlops"],
+          products: ["Splunk Machine Learning Toolkit (MLTK)", "Splunk IT Service Intelligence (ITSI)"],
+          booths: ["obs_itsi", "obs_cloud"],
+          recommendation: {
+            es: "MLTK aprende el patrón normal de vibración/calor y avisa la falla con anticipación; ITSI la eleva a incidente accionable.",
+            en: "MLTK learns the normal vibration/heat pattern and warns of failure ahead of time; ITSI raises it as an actionable incident." },
+        },
+        {
+          id: "dist-itot-sec",
+          title: { es: "SecOps en la convergencia IT/OT", en: "SecOps at the IT/OT convergence" },
+          desc: { es: "Los datos de sensores cruzan fronteras que antes estaban aisladas.",
+                   en: "Sensor data crosses boundaries that used to be isolated." },
+          securityChallenge: {
+            es: "La convergencia IT/OT amplía la superficie de ataque y mezcla telemetría que el SOC no correlacionaba.",
+            en: "IT/OT convergence widens the attack surface and mixes telemetry the SOC didn't correlate before." },
+          pillars: ["secops"],
+          products: ["Splunk Enterprise Security", "Cisco XDR", "Cisco ISE", "Splunk SOAR"],
+          booths: ["sec_aiwork"],
+          recommendation: {
+            es: "Splunk ES + XDR correlacionan telemetría IT y OT en un solo lugar, ISE aporta identidad y SOAR automatiza la respuesta.",
+            en: "Splunk ES + XDR correlate IT and OT telemetry in one place, ISE adds identity and SOAR automates the response." },
+        },
+        {
+          id: "dist-forecast",
+          title: { es: "Modelos de slotting y forecast en producción", en: "Slotting and forecast models in production" },
+          desc: { es: "La eficiencia del almacén depende de modelos de colocación y demanda siempre afinados.",
+                   en: "Warehouse efficiency depends on placement and demand models kept finely tuned." },
+          securityChallenge: {
+            es: "Un modelo de forecast con drift genera sobrestock o quiebres que nadie atribuye al modelo.",
+            en: "A drifting forecast model causes overstock or stockouts no one attributes to the model." },
+          pillars: ["mlops", "bizops"],
+          products: ["Splunk Machine Learning Toolkit (MLTK)", "Splunk Observability for AI", "Cisco AI Defense — Model Validation"],
+          booths: ["obs_cloud", "obs_datafabric"],
+          recommendation: {
+            es: "MLTK + Splunk Observability for AI detectan el drift y disparan el reentrenamiento; BizOps conecta el error del modelo con el costo de inventario.",
+            en: "MLTK + Splunk Observability for AI detect drift and trigger retraining; BizOps ties model error to inventory cost." },
+        },
+      ],
+    },
+
+    transportation: {
+      name: { es: "Transporte", en: "Transportation" }, icon: "truck",
+      tagline: { es: "Flotas y rutas monitoreadas en tiempo real.", en: "Fleets and routes monitored in real time." },
+      useCases: [
+        {
+          id: "trans-platform",
+          title: { es: "Disponibilidad de plataformas de ruteo y telemática", en: "Availability of routing and telematics platforms" },
+          desc: { es: "El motor de ruteo recalcula miles de rutas en tiempo real y no puede detenerse.",
+                   en: "The routing engine recalculates thousands of routes in real time and cannot stop." },
+          securityChallenge: {
+            es: "Una degradación gradual del backend pasa desapercibida hasta que las entregas empiezan a fallar.",
+            en: "A gradual backend degradation goes unnoticed until deliveries start to fail." },
+          pillars: ["aiops", "itops", "appops"],
+          products: ["Splunk IT Service Intelligence (ITSI)", "Splunk Observability Cloud", "Cisco AppDynamics"],
+          booths: ["obs_itsi", "obs_cloud"],
+          recommendation: {
+            es: "ITSI + AIOps detectan la degradación temprana y AppDynamics/Observability Cloud correlacionan la causa raíz antes de que impacte las entregas.",
+            en: "ITSI + AIOps catch early degradation and AppDynamics/Observability Cloud correlate root cause before it impacts deliveries." },
+        },
+        {
+          id: "trans-apps",
+          title: { es: "Experiencia de apps de pasajeros y conductores", en: "Passenger and driver app experience" },
+          desc: { es: "Las apps deben responder al instante en redes móviles variables.",
+                   en: "The apps must respond instantly on variable mobile networks." },
+          securityChallenge: {
+            es: "La lentitud puede venir de la app, la nube o el operador móvil — sin visibilidad no hay culpable claro.",
+            en: "Slowness may come from the app, the cloud or the mobile carrier — without visibility there's no clear culprit." },
+          pillars: ["appops", "netops"],
+          products: ["Cisco AppDynamics", "Cisco ThousandEyes", "Splunk Observability Cloud"],
+          booths: ["obs_cloud", "te_insights"],
+          recommendation: {
+            es: "AppDynamics correlaciona la transacción y ThousandEyes aísla la ruta de red/Internet responsable.",
+            en: "AppDynamics correlates the transaction and ThousandEyes isolates the responsible network/Internet path." },
+        },
+        {
+          id: "trans-fleet-pdm",
+          title: { es: "Mantenimiento predictivo de flota", en: "Predictive fleet maintenance" },
+          desc: { es: "Salud de motor y llantas en miles de vehículos para programar reparaciones proactivas.",
+                   en: "Engine and tire health across thousands of vehicles to schedule proactive repairs." },
+          securityChallenge: {
+            es: "La telemetría de flota es enorme y dispersa; sin ML las fallas se ven cuando el vehículo ya paró.",
+            en: "Fleet telemetry is huge and scattered; without ML failures show up only after the vehicle has stopped." },
+          pillars: ["aiops", "mlops"],
+          products: ["Splunk Machine Learning Toolkit (MLTK)", "Splunk IT Service Intelligence (ITSI)"],
+          booths: ["obs_itsi", "obs_cloud"],
+          recommendation: {
+            es: "MLTK modela el desgaste y predice la falla; ITSI la convierte en una orden de mantenimiento accionable.",
+            en: "MLTK models wear and predicts failure; ITSI turns it into an actionable maintenance order." },
+        },
+        {
+          id: "trans-critical-sec",
+          title: { es: "SecOps de infraestructura crítica de transporte", en: "SecOps for critical transport infrastructure" },
+          desc: { es: "Semáforos, señalización y centros de control son infraestructura de seguridad pública.",
+                   en: "Traffic lights, signaling and control centers are public-safety infrastructure." },
+          securityChallenge: {
+            es: "Un compromiso tiene impacto físico; el SOC necesita correlación y respuesta inmediatas.",
+            en: "A compromise has physical impact; the SOC needs immediate correlation and response." },
+          pillars: ["secops"],
+          products: ["Splunk Enterprise Security", "Cisco XDR", "Cisco ISE", "Splunk SOAR"],
+          booths: ["sec_aiwork"],
+          recommendation: {
+            es: "Splunk ES + XDR correlacionan, ISE aporta identidad y SOAR automatiza la contención en infraestructura crítica.",
+            en: "Splunk ES + XDR correlate, ISE adds identity and SOAR automates containment on critical infrastructure." },
+        },
+        {
+          id: "trans-route-mlops",
+          title: { es: "Modelos de optimización de rutas en producción", en: "Route optimization models in production" },
+          desc: { es: "La eficiencia de la flota depende de modelos de ruteo siempre precisos.",
+                   en: "Fleet efficiency depends on routing models that stay accurate." },
+          securityChallenge: {
+            es: "Un modelo con drift genera rutas subóptimas y sobrecosto de combustible sin señal visible.",
+            en: "A drifting model produces suboptimal routes and fuel overspend with no visible signal." },
+          pillars: ["mlops", "bizops"],
+          products: ["Splunk Machine Learning Toolkit (MLTK)", "Splunk Observability for AI", "Cisco AI Defense — Model Validation"],
+          booths: ["obs_cloud", "obs_datafabric"],
+          recommendation: {
+            es: "MLTK + Splunk Observability for AI monitorean el modelo y su drift; BizOps traduce el error en sobrecosto de combustible.",
+            en: "MLTK + Splunk Observability for AI monitor the model and its drift; BizOps translates the error into fuel overspend." },
+        },
+      ],
+    },
+
+    manufacturing: {
+      name: { es: "Manufactura", en: "Manufacturing" }, icon: "factory",
+      tagline: { es: "OT, líneas y gemelos digitales sin paros no planeados.", en: "OT, lines and digital twins with no unplanned downtime." },
+      useCases: [
+        {
+          id: "mfg-oee",
+          title: { es: "Disponibilidad de líneas y OEE", en: "Line availability and OEE" },
+          desc: { es: "La eficiencia general del equipo (OEE) depende de que las líneas no se detengan.",
+                   en: "Overall equipment effectiveness (OEE) depends on lines never stopping." },
+          securityChallenge: {
+            es: "Un paro no planeado cuesta miles por minuto y su causa suele estar oculta en datos de OT dispersos.",
+            en: "Unplanned downtime costs thousands per minute and its cause is often hidden in scattered OT data." },
+          pillars: ["itops", "aiops", "bizops"],
+          products: ["Splunk IT Service Intelligence (ITSI)", "Cisco Nexus Dashboard", "AppDynamics Business iQ"],
+          booths: ["obs_itsi", "obs_datafabric"],
+          recommendation: {
+            es: "ITSI mapea la línea como servicio y con AIOps anticipa el paro; Business iQ expresa el OEE y el costo del paro en términos de negocio.",
+            en: "ITSI maps the line as a service and with AIOps anticipates the stop; Business iQ expresses OEE and downtime cost in business terms." },
+        },
+        {
+          id: "mfg-pdm",
+          title: { es: "Mantenimiento predictivo (PdM)", en: "Predictive maintenance (PdM)" },
+          desc: { es: "Datos de sensores de máquinas industriales para prevenir paros costosos.",
+                   en: "Industrial machine sensor data to prevent costly downtime." },
+          securityChallenge: {
+            es: "La señal de falla se pierde entre millones de lecturas de sensores sin un motor de ML.",
+            en: "The failure signal is lost among millions of sensor readings without an ML engine." },
+          pillars: ["aiops", "mlops"],
+          products: ["Splunk Machine Learning Toolkit (MLTK)", "Splunk IT Service Intelligence (ITSI)", "Splunk Observability Cloud"],
+          booths: ["obs_itsi", "obs_cloud"],
+          recommendation: {
+            es: "MLTK aprende el comportamiento normal de la máquina y predice la falla; ITSI la eleva a mantenimiento accionable.",
+            en: "MLTK learns the machine's normal behavior and predicts failure; ITSI raises it to actionable maintenance." },
+        },
+        {
+          id: "mfg-otvis",
+          title: { es: "Observabilidad de OT/ICS", en: "OT/ICS observability" },
+          desc: { es: "Los sistemas de control industrial necesitan visibilidad que no fue diseñada en ellos.",
+                   en: "Industrial control systems need visibility that was never designed into them." },
+          securityChallenge: {
+            es: "Sin telemetría de OT unificada, los equipos operan a ciegas ante anomalías de proceso.",
+            en: "Without unified OT telemetry, teams operate blind to process anomalies." },
+          pillars: ["netops", "secops"],
+          products: ["Cisco Nexus Dashboard", "Cisco Catalyst Center", "Splunk Enterprise Security"],
+          booths: ["te_assurance", "sec_aiwork"],
+          recommendation: {
+            es: "Catalyst Center + Nexus Dashboard dan visibilidad de red OT y Splunk ES aporta el ángulo de seguridad del proceso.",
+            en: "Catalyst Center + Nexus Dashboard provide OT network visibility and Splunk ES adds the process-security angle." },
+        },
+        {
+          id: "mfg-itot-sec",
+          title: { es: "SecOps IT/OT", en: "IT/OT SecOps" },
+          desc: { es: "La convergencia IT/OT expone a la planta a amenazas que antes no la alcanzaban.",
+                   en: "IT/OT convergence exposes the plant to threats that couldn't reach it before." },
+          securityChallenge: {
+            es: "El SOC necesita correlacionar telemetría OT con IT para detectar ataques al proceso industrial.",
+            en: "The SOC needs to correlate OT telemetry with IT to detect attacks on the industrial process." },
+          pillars: ["secops"],
+          products: ["Splunk Enterprise Security", "Cisco XDR", "Cisco ISE", "Splunk SOAR"],
+          booths: ["sec_aiwork"],
+          recommendation: {
+            es: "Splunk ES + XDR unifican la detección IT/OT, ISE aporta identidad y SOAR automatiza la respuesta ante incidentes de proceso.",
+            en: "Splunk ES + XDR unify IT/OT detection, ISE adds identity and SOAR automates response to process incidents." },
+        },
+        {
+          id: "mfg-quality-mlops",
+          title: { es: "Modelos de calidad y visión en producción", en: "Quality and vision models in production" },
+          desc: { es: "La inspección de calidad por visión computacional depende de modelos siempre precisos.",
+                   en: "Computer-vision quality inspection depends on models that stay accurate." },
+          securityChallenge: {
+            es: "Un modelo de visión con drift deja pasar defectos o rechaza producto bueno sin alerta.",
+            en: "A drifting vision model lets defects through or rejects good product with no alert." },
+          pillars: ["mlops"],
+          products: ["Splunk Machine Learning Toolkit (MLTK)", "Splunk Observability for AI", "Cisco AI Defense — Model Validation"],
+          booths: ["obs_cloud", "obs_itsi"],
+          recommendation: {
+            es: "MLTK + Splunk Observability for AI vigilan el desempeño del modelo de visión y AI Defense valida su integridad.",
+            en: "MLTK + Splunk Observability for AI watch the vision model's performance and AI Defense validates its integrity." },
+        },
+      ],
+    },
+  },
+
+  /* -------------------------------------------------------------------
+     UI STRINGS (ES / EN)
+     ------------------------------------------------------------------- */
+  ui: {
+    attract_kicker: { es: "Cisco AI Bridge · Cisco Connect Cancún 2026", en: "Cisco AI Bridge · Cisco Connect Cancún 2026" },
+    attract_title: { es: "Observability Blueprint", en: "Observability Blueprint" },
+    attract_sub: { es: "Full-Stack Observability: de la red al modelo al negocio.", en: "Full-Stack Observability: from network to model to business." },
+    attract_cta: { es: "Toca para comenzar", en: "Tap to begin" },
+    lang_label: { es: "EN", en: "ES" },
+
+    path_title: { es: "¿Cómo quieres explorar?", en: "How do you want to explore?" },
+    path_exp_title: { es: "Ya sé mi caso de uso", en: "I know my use case" },
+    path_exp_desc: { es: "Cuéntame tu caso de uso y te muestro cómo el portafolio de Cisco/Splunk lo resuelve y qué booths visitar.",
+                     en: "Tell me your use case and I'll show how the Cisco/Splunk portfolio solves it and which booths to visit." },
+    path_new_title: { es: "Ayúdame a descubrirlo", en: "Help me discover it" },
+    path_new_desc: { es: "Elige tu industria y te guío por los casos de uso de observabilidad que identificamos para ti.",
+                     en: "Pick your industry and I'll guide you through the observability use cases we identified for you." },
+
+    industry_title: { es: "Selecciona tu industria", en: "Select your industry" },
+    usecase_title: { es: "Selecciona tu caso de uso", en: "Select your use case" },
+    usecase_title_new: { es: "Casos de uso que identificamos", en: "Use cases we identified" },
+
+    result_challenge: { es: "El reto operativo", en: "The operational challenge" },
+    result_pillars: { es: "Pilares de observabilidad que aplican", en: "Observability pillars that apply" },
+    result_products: { es: "Portafolio Cisco/Splunk recomendado", en: "Recommended Cisco/Splunk portfolio" },
+    result_reco: { es: "Cómo Cisco lo resuelve", en: "How Cisco solves it" },
+    result_booths: { es: "Booths que debes visitar", en: "Booths you should visit" },
+
+    btn_back: { es: "Atrás", en: "Back" },
+    btn_restart: { es: "Empezar de nuevo", en: "Start over" },
+    btn_explore_pillars: { es: "Ver los 7 pilares", en: "See the 7 pillars" },
+    pillars_title: { es: "Blueprint de Observabilidad · 7 Pilares", en: "Observability Blueprint · 7 Pillars" },
+    pillars_hint: { es: "Toca un pilar para ver los productos Cisco/Splunk y por qué están ahí", en: "Tap a pillar to see the Cisco/Splunk products and why they belong there" },
+    pillar_products: { es: "Productos que lo habilitan", en: "Products that enable it" },
+    pillar_why: { es: "Por qué", en: "Why" },
+    pillar_back: { es: "Volver a los 7 pilares", en: "Back to the 7 pillars" },
+
+    footer: { es: "Cisco AI Bridge · Cisco Connect Cancún 2026 · © Cisco Systems México",
+              en: "Cisco AI Bridge · Cisco Connect Cancún 2026 · © Cisco Systems Mexico" },
+  },
+};
+
+const initialLang=(function(){try{const u=new URL(location.href);const q=u.searchParams.get('lang');if(q==='es'||q==='en')return q;const ls=localStorage.getItem('cisco.aibridge.lang');if(ls==='es'||ls==='en')return ls;}catch(e){}return 'es';})();
+const state={lang:initialLang,screen:'attract',path:null,industry:null,useCase:null,pillar:null,hubDetail:false};
+function persistLang(){try{localStorage.setItem('cisco.aibridge.lang',state.lang);const u=new URL(location.href);u.searchParams.set('lang',state.lang);history.replaceState(null,'',u);}catch(e){}}
+function goHub(){location.href='../landing/index.html?lang='+encodeURIComponent(state.lang);}
+const app=document.getElementById('app'), overlay=document.getElementById('pillarOverlay');
+const accents=['#16BDEB','#3070E7','#22C55E','#FF9000','#FF007F'];
+const t=(v)=>v&&typeof v==='object'&&('es'in v||'en'in v)?v[state.lang]:v;
+const ui=(k)=>t(BOOTH_DATA.ui[k]);
+const esc=(s)=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+function icon(name){const common='viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"'; const p={
+id:`<rect x="12" y="14" width="40" height="36" rx="8"/><circle cx="32" cy="29" r="6"/><path d="M22 43c4-8 16-8 20 0"/>`, hub:`<circle cx="32" cy="32" r="8"/><circle cx="15" cy="18" r="5"/><circle cx="49" cy="18" r="5"/><circle cx="12" cy="46" r="5"/><circle cx="52" cy="46" r="5"/><path d="M25 28L19 21M39 28l6-7M25 36l-9 7M39 36l9 7"/><circle cx="32" cy="32" r="22" opacity=".35"/>`, 'shield-lock':`<path d="M32 6l21 8v16c0 14-9 23-21 28C20 53 11 44 11 30V14l21-8z"/><rect x="24" y="29" width="16" height="13" rx="3"/><path d="M27 29v-5a5 5 0 0110 0v5"/>`, grid:`<rect x="10" y="10" width="18" height="18" rx="4"/><rect x="36" y="10" width="18" height="18" rx="4"/><rect x="10" y="36" width="18" height="18" rx="4"/><rect x="36" y="36" width="18" height="18" rx="4"/>`, eye:`<path d="M5 32s10-16 27-16 27 16 27 16-10 16-27 16S5 32 5 32z"/><circle cx="32" cy="32" r="8"/>`, radar:`<circle cx="32" cy="32" r="23"/><circle cx="32" cy="32" r="7"/><path d="M32 32l17-15M32 9v7M32 48v7M9 32h7M48 32h7"/>`, 'brick-wall':`<path d="M8 18h48v32H8zM8 29h48M8 40h48M20 18v11M44 18v11M32 29v11M20 40v10M44 40v10"/>`, guard:`<path d="M32 6l20 9v14c0 14-8 23-20 29-12-6-20-15-20-29V15l20-9z"/><path d="M24 33l6 6 12-15"/>`, code:`<path d="M24 20L12 32l12 12M40 20l12 12-12 12M35 14l-6 36"/>`, branch:`<circle cx="18" cy="18" r="6"/><circle cx="46" cy="18" r="6"/><circle cx="32" cy="48" r="6"/><path d="M22 22c8 8 10 13 10 20M42 22c-8 8-10 13-10 20"/>`, globe:`<circle cx="32" cy="32" r="24"/><path d="M8 32h48M32 8c8 8 8 40 0 48M32 8c-8 8-8 40 0 48"/>`,
+cart:`<circle cx="24" cy="51" r="4"/><circle cx="47" cy="51" r="4"/><path d="M8 12h8l7 28h27l6-20H21"/>`, bank:`<path d="M8 25h48L32 10 8 25zM14 25v25M26 25v25M38 25v25M50 25v25M10 50h44"/>`, box:`<path d="M12 22l20-11 20 11v24L32 57 12 46V22zM12 22l20 11 20-11M32 33v24"/>`, truck:`<path d="M7 20h32v24H7zM39 29h10l8 8v7H39z"/><circle cx="19" cy="49" r="5"/><circle cx="48" cy="49" r="5"/>`, factory:`<path d="M8 52V25l14 9V24l14 10V16h18v36H8zM15 43h8M30 43h8M45 43h6"/>`}; return `<svg class="icon" ${common}>${p[name]||p.grid}</svg>`}
+function chrome(content,progress=''){const hubLabel=state.lang==='es'?'‹ Volver al Hub':'‹ Back to Hub'; app.innerHTML=`<div class="topbar"><div class="brand"><div class="word">CISCO</div><div class="stage">AI Bridge · Observability</div></div><div class="topbarRight"><button class="hub tap" data-action="hub" title="${hubLabel}">${hubLabel}</button><button class="lang tap" data-action="lang">${ui('lang_label')}</button></div></div>${progress}<section class="screen ${state.screen==='attract'?'hero':''}">${content}</section><div class="footer">${ui('footer')}</div>`}
+function progress(){if(state.screen==='attract')return'';const steps=['path','industry','usecase','result'];return`<div class="progress">${steps.map(s=>`<span class="${s===state.screen?'on':''}">${s==='path'?'Path':s==='industry'?'Industry':s==='usecase'?'Use case':'Result'}</span>`).join('<b>›</b>')}</div>`}
+function titleBlock(title){return`<div class="titleBlock"><div class="eyebrow">${esc(BOOTH_DATA.meta.event)}</div><h2 class="pageTitle">${esc(title)}</h2></div>`}
+function render(){document.documentElement.lang=state.lang; const r={attract, path, industry, usecase, result}[state.screen]; r();}
+function attract(){chrome(`<div class="kicker">${ui('attract_kicker')}</div><h1>${ui('attract_title')}</h1><p class="subtitle">${ui('attract_sub')}</p><div class="ctaRow"><button class="cta tap" data-action="start">${ui('attract_cta')}</button><button class="ghost tap" data-action="pillars">${ui('btn_explore_pillars')}</button></div>`)}
+function path(){chrome(`${titleBlock(ui('path_title'))}<div class="grid two"><article class="card pathCard tap" style="--accent:#16BDEB;--i:0" data-action="path" data-path="experienced"><div class="icon">${icon('radar')}</div><h2>${ui('path_exp_title')}</h2><p>${ui('path_exp_desc')}</p><div class="num">01</div></article><article class="card pathCard tap" style="--accent:#FF007F;--i:1" data-action="path" data-path="new"><div class="icon">${icon('eye')}</div><h2>${ui('path_new_title')}</h2><p>${ui('path_new_desc')}</p><div class="num">02</div></article></div><div class="actions"><button class="btn" data-action="pillars">${ui('btn_explore_pillars')}</button></div>`,progress())}
+function industry(){const cards=Object.entries(BOOTH_DATA.industries).map(([id,ind],i)=>`<article class="card industryCard tap" style="--accent:${accents[i]};--i:${i}" data-action="industry" data-id="${id}">${icon(ind.icon)}<h3>${t(ind.name)}</h3><p>${t(ind.tagline)}</p></article>`).join(''); chrome(`${titleBlock(ui('industry_title'))}<div class="grid five">${cards}</div><div class="actions"><button class="btn" data-action="back">${ui('btn_back')}</button></div>`,progress())}
+function usecase(){const ind=BOOTH_DATA.industries[state.industry];const cards=ind.useCases.map((uc,i)=>`<article class="card usecaseCard tap" style="--accent:${accents[i%accents.length]};--i:${i}" data-action="usecase" data-id="${uc.id}"><h3>${t(uc.title)}</h3><p>${t(uc.desc)}</p></article>`).join('');chrome(`${titleBlock(state.path==='experienced'?ui('usecase_title'):ui('usecase_title_new'))}<div class="grid cards">${cards}</div><div class="actions"><button class="btn" data-action="back">${ui('btn_back')}</button></div>`,progress())}
+function result(){const ind=BOOTH_DATA.industries[state.industry], uc=ind.useCases.find(u=>u.id===state.useCase); const pillars=uc.pillars.map(id=>{const p=BOOTH_DATA.pillars[id];return`<div class="chip" style="--pc:${p.color}" title="${esc(t(p.short))}">${icon(p.icon)}<div><b>${t(p.name)}</b><small>${t(p.short)}</small></div></div>`}).join(''); const products=uc.products.map(p=>`<span class="badge">${esc(p)}</span>`).join(''); const booths=uc.booths.map(id=>{const b=BOOTH_DATA.booths[id];return`<article class="booth"><h3>${t(b.name)}</h3><p>${t(b.focus)}</p><div class="badges">${b.products.map(p=>`<span class="badge">${esc(p)}</span>`).join('')}</div></article>`}).join(''); chrome(`<div class="result"><div class="resultHero"><div class="resultHeader"><div class="eyebrow">${t(ind.name)} · ${t(ind.tagline)}</div><h2>${t(uc.title)}</h2><p>${t(uc.desc)}</p></div><div class="callout"><h3 class="sectionTitle">${ui('result_challenge')}</h3><p>${t(uc.securityChallenge)}</p></div></div><div class="resultGrid"><section class="panel"><h3 class="sectionTitle">${ui('result_pillars')}</h3><div class="pillars">${pillars}</div></section><section class="panel reco"><h3 class="sectionTitle">${ui('result_reco')}</h3><p>${t(uc.recommendation)}</p></section><section class="panel"><h3 class="sectionTitle">${ui('result_products')}</h3><div class="badges">${products}</div></section><section class="panel booths"><h3 class="sectionTitle">${ui('result_booths')}</h3><div class="boothGrid">${booths}</div></section></div><div class="actions"><button class="btn" data-action="back">${ui('btn_back')}</button><button class="btn primary" data-action="restart">${ui('btn_restart')}</button></div></div>`,progress())}
+function pillarGrid(){const entries=Object.entries(BOOTH_DATA.pillars),hub=BOOTH_DATA.hub; const nodes=entries.map(([id,p],i)=>{const a=-90+i*(360/entries.length),r=38,x=50+r*Math.cos(a*Math.PI/180),y=50+r*Math.sin(a*Math.PI/180);return`<button class="radialNode tap" aria-label="${esc(t(p.name))}" style="--pc:${p.color};--i:${i};--x:${x.toFixed(2)}%;--y:${y.toFixed(2)}%" data-action="pillar-detail" data-id="${id}">${icon(p.icon)}<b>${t(p.name)}</b></button>`}).join(''); const spokes=entries.map((_,i)=>{const a=-90+i*(360/entries.length),r=38,x=50+r*Math.cos(a*Math.PI/180),y=50+r*Math.sin(a*Math.PI/180);return`<line x1="50" y1="50" x2="${x.toFixed(2)}" y2="${y.toFixed(2)}" style="animation-delay:${i*-.35}s"/>`}).join(''); const fallback=entries.map(([id,p])=>`<button class="pillarRow tap" style="--pc:${p.color}" data-action="pillar-detail" data-id="${id}">${icon(p.icon)}<div><b>${t(p.name)}</b><small>${t(p.short)}</small></div></button>`).join(''); return `<div class="overlayTop"><div><h2 class="pageTitle">${ui('pillars_title')}</h2><p class="pillarsHint">${ui('pillars_hint')}</p></div><button class="close" data-action="close">×</button></div><div class="pillarGrid"><section class="radialStage" aria-label="${esc(ui('pillars_title'))}"><svg class="spokes" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${spokes}</svg><button class="hubNode tap" data-action="hub-detail" aria-label="${esc(t(hub.name)+' · '+t(hub.full))}">${icon(hub.icon)}<b>${t(hub.name)}</b><span>${t(hub.full)}</span></button>${nodes}</section><section class="radialFallback"><button class="hubBanner tap" data-action="hub-detail">${icon(hub.icon)}<div><b>${t(hub.name)}</b><small>${t(hub.full)}</small></div></button>${fallback}</section></div>`}
+function pillarDetail(){const p=BOOTH_DATA.pillars[state.pillar]||Object.values(BOOTH_DATA.pillars)[0]; const products=(p.products||[]).map((prod,i)=>`<article class="pillarProduct" style="--i:${i}"><strong class="productName">${esc(prod.name)}</strong><span class="whyLabel">${ui('pillar_why')}</span><p>${esc(t(prod.why))}</p></article>`).join(''); return `<div class="overlayTop"><button class="btn pillarBack" data-action="pillar-grid">‹ ${ui('pillar_back')}</button><button class="close" data-action="close">×</button></div><section class="pillarDetail" style="--pc:${p.color}"><div class="pillarDetailHead">${icon(p.icon)}<div><div class="eyebrow">${esc(p.key)}</div><h3>${t(p.name)}</h3></div></div><p class="pillarLead">${t(p.short)}</p><h3 class="sectionTitle">${ui('pillar_products')}</h3><div class="pillarProducts">${products}</div></section>`}
+function hubDetail(){const h=BOOTH_DATA.hub; const chips=(h.frameworks||[]).map(f=>`<span class="frameworkChip">${esc(f)}</span>`).join(''); return `<div class="overlayTop"><button class="btn pillarBack" data-action="pillar-grid">‹ ${ui('pillar_back')}</button><button class="close" data-action="close">×</button></div><section class="hubDetail" style="--pc:${h.color}"><div class="hubDetailHead">${icon(h.icon)}<div><div class="eyebrow">${esc(t(h.full))}</div><h3>${t(h.name)}</h3><p>${t(h.full)}</p></div></div><p class="hubLead">${t(h.short)}</p><p class="hubCopy">${t(h.detail)}</p><div class="frameworkChips">${chips}</div></section>`}
+function showPillars(){overlay.className='overlay open'; overlay.setAttribute('aria-hidden','false'); overlay.innerHTML=`<div class="overlayBox">${state.hubDetail?hubDetail():state.pillar?pillarDetail():pillarGrid()}</div>`}
+function hidePillars(){state.pillar=null;state.hubDetail=false; overlay.className='overlay'; overlay.setAttribute('aria-hidden','true')}
+function back(){if(state.screen==='result'){state.screen='usecase';state.useCase=null}else if(state.screen==='usecase'){state.screen='industry';state.industry=null}else if(state.screen==='industry'){state.screen='path';state.path=null}else state.screen='attract';render()}
+document.addEventListener('click',e=>{resetIdle(); const el=e.target.closest('[data-action]'); if(!el)return; const a=el.dataset.action; if(a==='hub'){goHub();return} if(a==='lang'){state.lang=state.lang==='es'?'en':'es'; persistLang(); render(); if(overlay.classList.contains('open'))showPillars()} if(a==='start'){state.screen='path';render()} if(a==='path'){state.path=el.dataset.path;state.screen='industry';render()} if(a==='industry'){state.industry=el.dataset.id;state.screen='usecase';render()} if(a==='usecase'){state.useCase=el.dataset.id;state.screen='result';render()} if(a==='back')back(); if(a==='restart'){state.screen='attract';state.path=state.industry=state.useCase=null;render()} if(a==='pillars'){state.pillar=null;state.hubDetail=false;showPillars()} if(a==='hub-detail'){state.pillar=null;state.hubDetail=true;showPillars()} if(a==='pillar-detail'){state.pillar=el.dataset.id;state.hubDetail=false;showPillars()} if(a==='pillar-grid'){state.pillar=null;state.hubDetail=false;showPillars()} if(a==='close')hidePillars();});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-action="pillar-detail"]')){e.preventDefault();e.target.click()}});
+let idle; function resetIdle(){clearTimeout(idle); idle=setTimeout(()=>{goHub()},90000)} ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
+function initCanvas(){const c=document.getElementById('network'),ctx=c.getContext('2d');let w,h,dpr,pts=[];function resize(){dpr=Math.min(devicePixelRatio||1,2);w=c.width=innerWidth*dpr;h=c.height=innerHeight*dpr;c.style.width=innerWidth+'px';c.style.height=innerHeight+'px';pts=Array.from({length:Math.min(90,Math.floor(innerWidth/18))},()=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.34*dpr,vy:(Math.random()-.5)*.34*dpr,r:(Math.random()*2+1)*dpr}))}function tick(){ctx.clearRect(0,0,w,h);for(const p of pts){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1}for(let i=0;i<pts.length;i++){for(let j=i+1;j<pts.length;j++){const a=pts[i],b=pts[j],dx=a.x-b.x,dy=a.y-b.y,dist=Math.hypot(dx,dy);if(dist<165*dpr){ctx.globalAlpha=(1-dist/(165*dpr))*.42;ctx.strokeStyle='#16BDEB';ctx.lineWidth=1*dpr;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}}}for(const p of pts){ctx.globalAlpha=.75;ctx.fillStyle=Math.random()>.5?'#16BDEB':'#3070E7';ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()}requestAnimationFrame(tick)}addEventListener('resize',resize);resize();tick()}
+initCanvas(); render(); resetIdle();
+  </script>
+</body>
+</html>

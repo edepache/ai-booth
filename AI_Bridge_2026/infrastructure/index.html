@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Cisco AI Bridge · Infrastructure Blueprint Kiosk</title>
+  <style>
+    :root{
+      --cisco-blue:#3070E7; --navy:#07182D; --dark:#0F1729; --teal:#16BDEB;
+      --green:#22C55E; --yellow:#F59E0B; --orange:#FF9000; --red:#EF4444;
+      --cyber:#00C8FF; --pink:#FF007F; --ink:#EAF6FF; --muted:#A8C4D8;
+      --glass:rgba(10,30,54,.62); --glass2:rgba(255,255,255,.08); --line:rgba(120,210,255,.22);
+      --shadow:0 24px 90px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.12);
+      font-family:'CiscoSans','Helvetica Neue',Helvetica,Arial,sans-serif;
+    }
+    *{box-sizing:border-box} html,body{height:100%;margin:0;overflow:hidden;background:#030B18;color:var(--ink);font-family:'CiscoSans','Helvetica Neue',Helvetica,Arial,sans-serif;touch-action:manipulation;user-select:none;-webkit-tap-highlight-color:transparent}
+    body:before{content:"";position:fixed;inset:-20%;background:radial-gradient(circle at 18% 20%,rgba(48,112,231,.42),transparent 27%),radial-gradient(circle at 80% 8%,rgba(0,200,255,.34),transparent 24%),radial-gradient(circle at 74% 76%,rgba(255,0,127,.18),transparent 28%),linear-gradient(135deg,#030813 0%,#07182D 45%,#081121 100%);z-index:-4;animation:mesh 18s ease-in-out infinite alternate}
+    body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:10;opacity:.15;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(circle at center,#000 20%,transparent 86%)}
+    @keyframes mesh{0%{filter:hue-rotate(0deg) saturate(1);transform:scale(1)}100%{filter:hue-rotate(12deg) saturate(1.25);transform:scale(1.08)}}
+    #network{position:fixed;inset:0;z-index:-3;opacity:.82} .orb{position:fixed;border-radius:999px;filter:blur(18px);opacity:.34;z-index:-2;animation:float 10s ease-in-out infinite alternate}.orb.a{width:290px;height:290px;background:var(--teal);left:5%;bottom:8%}.orb.b{width:220px;height:220px;background:var(--pink);right:9%;top:17%;animation-delay:-3s}.orb.c{width:180px;height:180px;background:var(--green);right:30%;bottom:7%;animation-delay:-6s}@keyframes float{to{transform:translate3d(28px,-42px,0) scale(1.18)}}
+    .app{position:relative;height:100%;display:flex;flex-direction:column;padding:34px clamp(28px,4vw,72px) 26px}.topbar{position:relative;z-index:20;display:flex;align-items:center;justify-content:space-between;min-height:74px;gap:20px}.brand{display:flex;align-items:center;gap:16px;font-weight:900;letter-spacing:.22em;color:#fff}.brand .word{font-size:clamp(18px,2vw,28px);color:#7DDCFF;text-shadow:0 0 24px rgba(22,189,235,.55)}.brand .stage{font-size:13px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}.lang{min-width:92px;height:64px;border:1px solid rgba(125,220,255,.32);background:linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.05));color:#fff;border-radius:22px;font-size:22px;font-weight:900;box-shadow:var(--shadow);cursor:pointer}.topbarRight{display:flex;gap:12px;align-items:center}.hub{min-height:64px;padding:0 20px;border:1px solid rgba(125,220,255,.32);background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));color:#DDF8FF;border-radius:20px;font-size:17px;font-weight:850;letter-spacing:.02em;cursor:pointer;box-shadow:var(--shadow);white-space:nowrap}.hub:hover{border-color:rgba(125,220,255,.6);background:linear-gradient(180deg,rgba(48,112,231,.28),rgba(22,189,235,.14))}.hub:active,.lang:active,.tap:active{transform:scale(.97)}
+    .progress{display:flex;align-items:center;gap:10px;min-height:34px;margin-top:-4px;color:#85B7D6;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.12em}.progress span{opacity:.52}.progress .on{opacity:1;color:#fff;text-shadow:0 0 14px rgba(0,200,255,.55)}.progress b{opacity:.3}.screen{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0;animation:screenIn .38s ease-out both}@keyframes screenIn{from{opacity:0;transform:translateY(18px) scale(.988);filter:blur(7px)}to{opacity:1;transform:none;filter:none}}
+    .footer{position:relative;z-index:2;text-align:center;color:rgba(201,229,245,.58);font-size:14px;letter-spacing:.08em;padding-top:12px}.kicker{color:#7DDCFF;font-size:clamp(18px,2vw,28px);font-weight:900;letter-spacing:.18em;text-transform:uppercase;text-shadow:0 0 26px rgba(22,189,235,.62)}.hero{align-items:flex-start;text-align:left;position:relative}.hero:before{content:"";position:absolute;width:min(58vw,820px);height:min(58vw,820px);right:-6vw;top:42%;transform:translateY(-50%);border-radius:50%;background:conic-gradient(from 40deg,transparent,rgba(22,189,235,.4),transparent,rgba(48,112,231,.5),transparent);filter:blur(.2px);opacity:.72;animation:spin 18s linear infinite}.hero:after{content:"AI\A INFRASTRUCTURE\A BRIDGE";white-space:pre;position:absolute;right:4vw;top:50%;transform:translateY(-50%) rotate(-7deg);font-size:clamp(56px,8vw,150px);line-height:.78;font-weight:950;letter-spacing:-.07em;color:transparent;-webkit-text-stroke:1px rgba(125,220,255,.18);opacity:.9}@keyframes spin{to{transform:translateY(-50%) rotate(360deg)}}
+    h1{font-size:clamp(74px,10.2vw,190px);line-height:.78;margin:18px 0 22px;letter-spacing:-.085em;font-weight:950;max-width:1050px;background:linear-gradient(90deg,#fff 0%,#C9FFDD 36%,#22C55E 66%,#16BDEB 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 28px 80px rgba(0,200,255,.16)}.subtitle{font-size:clamp(26px,3.2vw,56px);line-height:1.05;color:#D6F6FF;max-width:900px;margin:0 0 44px;font-weight:750;letter-spacing:-.03em}.ctaRow{display:flex;gap:18px;align-items:center;flex-wrap:wrap}.cta{min-height:84px;padding:0 38px;border:0;border-radius:28px;background:linear-gradient(100deg,var(--green),var(--teal));color:#fff;font-size:clamp(24px,2.4vw,38px);font-weight:950;letter-spacing:-.02em;box-shadow:0 0 0 0 rgba(22,189,235,.65),0 22px 70px rgba(0,200,255,.35);animation:pulse 1.7s ease-in-out infinite;cursor:pointer}.ghost{min-height:72px;padding:0 26px;border-radius:24px;border:1px solid rgba(125,220,255,.34);background:rgba(255,255,255,.07);color:#DDF8FF;font-size:20px;font-weight:850;cursor:pointer}@keyframes pulse{50%{box-shadow:0 0 0 16px rgba(22,189,235,0),0 22px 84px rgba(0,200,255,.54);transform:translateY(-2px)}}
+    .titleBlock{margin-bottom:26px}.eyebrow{font-size:15px;text-transform:uppercase;letter-spacing:.22em;font-weight:900;color:#6DE8FF}.pageTitle{font-size:clamp(40px,5.2vw,86px);line-height:.92;margin:8px 0 0;font-weight:950;letter-spacing:-.055em}.grid{display:grid;gap:22px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.five{grid-template-columns:repeat(5,minmax(0,1fr))}.grid.cards{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));align-content:center}.card{position:relative;overflow:hidden;min-height:220px;border-radius:34px;border:1px solid rgba(157,222,255,.22);background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.045));box-shadow:var(--shadow);padding:28px;cursor:pointer;isolation:isolate;animation:cardIn .52s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*60ms)}.card:before{content:"";position:absolute;inset:-1px;background:radial-gradient(circle at var(--x,18%) var(--y,12%),color-mix(in srgb,var(--accent,#16BDEB) 55%,transparent),transparent 34%);opacity:.55;z-index:-1;transition:.35s}.card:after{content:"";position:absolute;inset:auto -20% -45% -20%;height:55%;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent,#16BDEB) 35%,transparent),transparent);filter:blur(28px);opacity:.36;transition:.35s}.card:hover,.card:focus-visible{transform:translateY(-8px);border-color:color-mix(in srgb,var(--accent,#16BDEB) 70%,white);box-shadow:0 34px 110px rgba(0,0,0,.5),0 0 42px color-mix(in srgb,var(--accent,#16BDEB) 32%,transparent)}.card:hover:before{opacity:.85}.card h2,.card h3{margin:0;color:#fff;letter-spacing:-.04em}.card h2{font-size:clamp(34px,4vw,68px);line-height:.92}.card h3{font-size:clamp(24px,2.1vw,38px);line-height:1.02}.card p{color:#C2D8E8;font-size:clamp(17px,1.3vw,23px);line-height:1.32;margin:16px 0 0}.card .icon{width:72px;height:72px;margin-bottom:20px;color:var(--accent);filter:drop-shadow(0 0 16px color-mix(in srgb,var(--accent) 62%,transparent))}.pathCard{min-height:390px;padding:42px}.pathCard .num{position:absolute;right:28px;bottom:18px;font-size:120px;font-weight:950;letter-spacing:-.12em;color:rgba(255,255,255,.055)}@keyframes cardIn{from{opacity:0;transform:translateY(26px) scale(.96)}to{opacity:1;transform:none}}
+    .industryCard{min-height:290px;padding:24px}.usecaseCard{min-height:230px}.result{justify-content:flex-start;overflow:auto;padding:8px 2px 12px;scrollbar-width:none}.result::-webkit-scrollbar{display:none}.resultHero{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;align-items:stretch;margin-bottom:20px}.resultHeader{border-radius:36px;border:1px solid rgba(157,222,255,.24);background:linear-gradient(145deg,rgba(48,112,231,.24),rgba(255,255,255,.06));box-shadow:var(--shadow);padding:30px}.resultHeader h2{font-size:clamp(38px,4.6vw,78px);line-height:.92;margin:0 0 16px;letter-spacing:-.06em}.resultHeader p{font-size:clamp(19px,1.45vw,25px);color:#CDEBFA;line-height:1.28;margin:0}.callout{border-radius:32px;padding:28px;border:1px solid rgba(239,68,68,.36);background:radial-gradient(circle at 12% 10%,rgba(239,68,68,.34),transparent 44%),rgba(255,255,255,.06);box-shadow:var(--shadow)}.sectionTitle{display:flex;align-items:center;gap:12px;font-size:clamp(20px,1.6vw,30px);font-weight:950;letter-spacing:-.03em;color:#fff;margin:0 0 16px}.sectionTitle:before{content:"";width:12px;height:32px;border-radius:20px;background:linear-gradient(var(--teal),var(--cisco-blue));box-shadow:0 0 22px rgba(22,189,235,.7)}.callout p,.reco p{font-size:clamp(19px,1.35vw,24px);line-height:1.3;color:#FFE8E8;margin:0}.resultGrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{border-radius:32px;border:1px solid rgba(157,222,255,.22);background:rgba(255,255,255,.065);box-shadow:var(--shadow);padding:24px}.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.chip{display:flex;gap:12px;align-items:flex-start;min-height:84px;border-radius:22px;padding:14px;border:1px solid color-mix(in srgb,var(--pc) 56%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--pc) 24%,transparent),rgba(255,255,255,.045))}.chip svg{flex:0 0 34px;width:34px;height:34px;color:var(--pc)}.chip b{display:block;font-size:17px;color:#fff}.chip small{display:block;color:#BBD2DF;font-size:12px;line-height:1.25;margin-top:4px}.badges{display:flex;flex-wrap:wrap;gap:10px}.badge{min-height:46px;display:inline-flex;align-items:center;border-radius:999px;padding:0 16px;border:1px solid rgba(125,220,255,.3);background:rgba(0,200,255,.08);color:#E9FBFF;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;font-weight:800}.reco{background:radial-gradient(circle at 95% 5%,rgba(34,197,94,.22),transparent 38%),rgba(255,255,255,.065)}.booths{grid-column:1/-1}.boothGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}.booth{position:relative;overflow:hidden;border-radius:30px;padding:24px;border:1px solid rgba(22,189,235,.42);background:linear-gradient(135deg,rgba(48,112,231,.28),rgba(0,200,255,.09));box-shadow:0 22px 70px rgba(0,0,0,.38),0 0 38px rgba(0,200,255,.14)}.booth:before{content:"VISIT";position:absolute;right:14px;top:8px;font-size:54px;font-weight:950;letter-spacing:-.08em;color:rgba(255,255,255,.06)}.booth h3{font-size:clamp(24px,2vw,36px);line-height:1;margin:0 0 12px;letter-spacing:-.04em}.booth p{color:#C8E7F5;font-size:18px;line-height:1.28;margin:0 0 16px}.actions{display:flex;gap:14px;margin-top:18px}.btn{min-height:64px;padding:0 24px;border-radius:22px;border:1px solid rgba(125,220,255,.3);background:rgba(255,255,255,.08);color:#fff;font-size:19px;font-weight:900;cursor:pointer}.btn.primary{background:linear-gradient(100deg,var(--green),var(--teal));border:0}.overlay{position:fixed;inset:0;z-index:50;display:none;padding:36px clamp(24px,4vw,74px);background:rgba(3,8,19,.72);backdrop-filter:blur(18px)}.overlay.open{display:flex;animation:screenIn .28s ease both}.overlayBox{width:100%;height:100%;overflow:auto;border-radius:42px;border:1px solid rgba(157,222,255,.28);background:linear-gradient(145deg,rgba(7,24,45,.92),rgba(15,23,41,.88));box-shadow:0 34px 130px rgba(0,0,0,.66);padding:30px}.overlayTop{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:24px}.pillarGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.pillarCard{min-height:190px;border-radius:28px;padding:20px;border:1px solid color-mix(in srgb,var(--pc) 50%,transparent);background:radial-gradient(circle at 12% 8%,color-mix(in srgb,var(--pc) 32%,transparent),transparent 44%),rgba(255,255,255,.06)}.pillarCard svg{width:48px;height:48px;color:var(--pc)}.pillarCard h3{font-size:25px;margin:12px 0 8px}.pillarCard p{margin:0;color:#C7DCE9;line-height:1.3}.close{min-width:64px;height:64px;border-radius:22px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.09);color:#fff;font-size:34px;cursor:pointer}
+    .pillarsHint{margin:-6px 0 22px;max-width:920px;color:#B7D9EA;font-size:clamp(18px,1.4vw,25px);line-height:1.3}.pillarCard{cursor:pointer;transition:transform .26s ease,border-color .26s ease,box-shadow .26s ease,background .26s ease}.pillarCard:focus-visible{outline:3px solid var(--pc);outline-offset:4px}.pillarCard:hover,.pillarCard:focus-visible{transform:translateY(-8px);border-color:color-mix(in srgb,var(--pc) 74%,white);box-shadow:0 30px 96px rgba(0,0,0,.48),0 0 44px color-mix(in srgb,var(--pc) 36%,transparent)}.pillarCard:active{transform:scale(.985)}.pillarCard .chev{position:absolute;right:18px;bottom:16px;width:46px;height:46px;display:grid;place-items:center;border-radius:16px;background:color-mix(in srgb,var(--pc) 22%,rgba(255,255,255,.08));border:1px solid color-mix(in srgb,var(--pc) 55%,transparent);color:#fff;font-size:30px;font-weight:900;box-shadow:0 0 28px color-mix(in srgb,var(--pc) 30%,transparent)}.pillarDetail{--pc:#16BDEB;position:relative;animation:detailIn .28s cubic-bezier(.2,.8,.2,1) both}.pillarDetail:before{content:"";position:absolute;inset:-18px -18px auto -18px;height:170px;border-radius:36px;background:radial-gradient(circle at 14% 12%,color-mix(in srgb,var(--pc) 46%,transparent),transparent 46%),linear-gradient(90deg,color-mix(in srgb,var(--pc) 35%,transparent),transparent);filter:blur(20px);opacity:.78;pointer-events:none}.pillarDetailHead{position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;border-radius:34px;border:1px solid color-mix(in srgb,var(--pc) 54%,rgba(255,255,255,.18));background:linear-gradient(135deg,color-mix(in srgb,var(--pc) 23%,rgba(255,255,255,.07)),rgba(255,255,255,.055));box-shadow:var(--shadow),0 0 54px color-mix(in srgb,var(--pc) 20%,transparent);padding:26px 30px;margin-bottom:22px}.pillarDetailHead:before{content:"";position:absolute;inset:0 0 auto;height:6px;background:linear-gradient(90deg,var(--pc),transparent)}.pillarDetailHead .icon{width:78px;height:78px;color:var(--pc);filter:drop-shadow(0 0 24px color-mix(in srgb,var(--pc) 64%,transparent));margin:0}.pillarDetailHead h3{font-size:clamp(38px,4.6vw,82px);line-height:.92;margin:0;color:#fff;letter-spacing:-.06em}.pillarLead{position:relative;margin:0 0 24px;color:#D7F4FF;font-size:clamp(22px,1.75vw,32px);line-height:1.24;font-weight:750}.pillarProducts{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}.pillarProduct{min-height:118px;border-radius:26px;padding:20px 22px;border:1px solid color-mix(in srgb,var(--pc) 42%,rgba(255,255,255,.16));background:linear-gradient(145deg,color-mix(in srgb,var(--pc) 15%,rgba(255,255,255,.07)),rgba(255,255,255,.045));box-shadow:0 18px 56px rgba(0,0,0,.24);animation:productIn .34s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*55ms)}.productName{display:inline-flex;align-items:center;min-height:40px;padding:8px 14px;margin-bottom:12px;border-radius:999px;background:color-mix(in srgb,var(--pc) 24%,rgba(255,255,255,.09));border:1px solid color-mix(in srgb,var(--pc) 58%,transparent);color:#fff;font-size:clamp(17px,1.25vw,23px);font-weight:950}.whyLabel{display:block;margin-bottom:4px;color:var(--pc);font-size:13px;font-weight:950;text-transform:uppercase;letter-spacing:.16em}.pillarProduct p{margin:0;color:#CDEBFA;font-size:clamp(17px,1.18vw,22px);line-height:1.34}.pillarBack{margin-bottom:18px}.pillarBack .btn{min-height:62px}@keyframes detailIn{from{opacity:0;transform:translateX(22px);filter:blur(7px)}to{opacity:1;transform:none;filter:none}}@keyframes productIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}@media (max-width:1100px){.grid.five{grid-template-columns:repeat(3,1fr)}.resultHero,.resultGrid{grid-template-columns:1fr}.hero:after{opacity:.34}.pathCard{min-height:300px}.pillarProducts{grid-template-columns:1fr}}@media (max-width:760px){.app{padding:20px 16px}.grid.two,.grid.five,.grid.cards{grid-template-columns:1fr}.hero:before,.hero:after{display:none}h1{font-size:70px}.topbar{min-height:58px}.lang{height:56px}.card{min-height:190px}.footer{font-size:11px}.progress{font-size:11px;gap:6px}.resultHeader h2{font-size:44px}.pillarDetailHead{grid-template-columns:1fr}.pillarProducts{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <canvas id="network" aria-hidden="true"></canvas><div class="orb a"></div><div class="orb b"></div><div class="orb c"></div>
+  <main class="app" id="app"></main>
+  <div class="overlay" id="pillarOverlay" aria-hidden="true"></div>
+  <script>
+const BOOTH_DATA = {
+  meta: {
+    event: "Cisco AI Bridge · Cisco Connect Cancún 2026",
+    stage: "Stage 3 — Storytelling",
+    blueprint: { es: "Blueprint de Infraestructura", en: "Infrastructure Blueprint" },
+    version: "1.0",
+  },
+
+  /* -------------------------------------------------------------------
+     6 INFRASTRUCTURE PILLARS (the six layers)
+     ------------------------------------------------------------------- */
+  pillars: {
+    switching: {
+      key: "Switching",
+      name: { es: "Switching", en: "Switching" },
+      short: {
+        es: "Catalyst 9000 y Nexus 9000: la capa que define la latencia y el ancho de banda de toda la plataforma.",
+        en: "Catalyst 9000 and Nexus 9000: the layer that sets the latency and bandwidth for the whole platform.",
+      },
+      color: "#22C55E", icon: "grid",
+      products: [
+        { name: "Cisco Catalyst 9000", why: {
+          es: "Switching de campus y sucursal con PoE, stacking y programabilidad vía IOS-XE.",
+          en: "Campus and branch switching with PoE, stacking and programmability via IOS-XE." } },
+        { name: "Cisco Nexus 9000", why: {
+          es: "Switching de Data Center con puertos de 400G/800G y ASICs Silicon One.",
+          en: "Data Center switching with 400G/800G ports and Silicon One ASICs." } },
+        { name: "Cisco Silicon One", why: {
+          es: "Silicio unificado que entrega el throughput y la baja latencia que exigen las cargas de IA.",
+          en: "Unified silicon delivering the throughput and low latency AI workloads demand." } },
+        { name: "Cisco Smart Switches (N9300)", why: {
+          es: "Permiten que agentes como Tetragon mitiguen vulnerabilidades de día cero directamente en el silicio, sin appliance externo.",
+          en: "Let agents like Tetragon mitigate zero-day vulnerabilities directly in silicon, with no external appliance." } },
+      ],
+    },
+    wireless: {
+      key: "Wireless",
+      name: { es: "Wireless", en: "Wireless" },
+      short: {
+        es: "Access Points Wi-Fi 6E/7 que además son sensores de experiencia de usuario y de espectro.",
+        en: "Wi-Fi 6E/7 access points that are also user-experience and spectrum sensors.",
+      },
+      color: "#16BDEB", icon: "radar",
+      products: [
+        { name: "Cisco Catalyst 9100/9200 Access Points", why: {
+          es: "Conectividad de alta densidad con roaming determinístico; el AP mide la experiencia y detecta interferencia antes del ticket.",
+          en: "High-density connectivity with deterministic roaming; the AP measures experience and detects interference before the ticket." } },
+        { name: "Meraki Access Points", why: {
+          es: "APs gestionados en la nube con políticas de RF, canales y potencia consistentes en todas las sedes.",
+          en: "Cloud-managed APs with consistent RF, channel and power policy across every site." } },
+        { name: "Cisco Catalyst Center (RRM)", why: {
+          es: "Gestión centralizada de radiofrecuencia sin configurar sitio por sitio.",
+          en: "Centralized RF management with no site-by-site configuration." } },
+      ],
+    },
+    routing: {
+      key: "Routing & WAN",
+      name: { es: "Routing y WAN", en: "Routing & WAN" },
+      short: {
+        es: "Catalyst 8000 y SD-WAN: transporte inteligente por aplicación, del borde a la nube.",
+        en: "Catalyst 8000 and SD-WAN: intelligent per-application transport, from edge to cloud.",
+      },
+      color: "#3070E7", icon: "globe",
+      products: [
+        { name: "Cisco Catalyst 8000 Edge", why: {
+          es: "Conecta sucursal, Data Center y nube con enrutamiento de alto desempeño.",
+          en: "Connects branch, Data Center and cloud with high-performance routing." } },
+        { name: "Cisco ISR 1000/4000", why: {
+          es: "Routers de sucursal para conectividad WAN flexible y segura.",
+          en: "Branch routers for flexible, secure WAN connectivity." } },
+        { name: "Cisco Catalyst SD-WAN", why: {
+          es: "Abstrae el transporte y decide por aplicación: lo crítico por el enlace con SLA, lo masivo a Internet, sin intervención manual.",
+          en: "Abstracts transport and decides per application: critical over the SLA link, bulk to Internet, with no manual intervention." } },
+        { name: "Cisco Secure Access (SASE)", why: {
+          es: "Habilita Zero Trust y segmentación de tráfico desde el mismo borde, eliminando el backhaul innecesario.",
+          en: "Enables Zero Trust and traffic segmentation from the edge itself, eliminating unnecessary backhaul." } },
+      ],
+    },
+    compute: {
+      key: "Compute & DC",
+      name: { es: "Compute y Data Center", en: "Compute & Data Center" },
+      short: {
+        es: "UCS e Intersight: cómputo listo para IA con fabric lossless de microsegundos.",
+        en: "UCS and Intersight: AI-ready compute with a microsecond lossless fabric.",
+      },
+      color: "#FF9000", icon: "code",
+      products: [
+        { name: "Cisco UCS X-Series", why: {
+          es: "Cómputo modular para virtualización, contenedores y cargas de IA bajo un plano de gestión único.",
+          en: "Modular compute for virtualization, containers and AI workloads under a single management plane." } },
+        { name: "Cisco UCS C-Series", why: {
+          es: "Servidores rack GPU-ready para inferencia y entrenamiento de modelos.",
+          en: "GPU-ready rack servers for model inference and training." } },
+        { name: "Cisco Intersight", why: {
+          es: "Aplica el perfil de servidor (firmware, RAID, red y almacenamiento) como código, no como checklist.",
+          en: "Applies the server profile (firmware, RAID, network and storage) as code, not as a checklist." } },
+        { name: "Cisco Nexus / Silicon One (Lossless Fabric)", why: {
+          es: "Fabric de 400G/800G y latencia de microsegundos, cero pérdida, para patrones all-to-all entre GPUs.",
+          en: "400G/800G microsecond, zero-loss fabric for all-to-all GPU patterns." } },
+      ],
+    },
+    platform: {
+      key: "Platform",
+      name: { es: "Plataforma y Automatización", en: "Platform & Automation" },
+      short: {
+        es: "Catalyst Center, ISE y SD-Access: la política sigue a la identidad, no a la topología.",
+        en: "Catalyst Center, ISE and SD-Access: policy follows identity, not topology.",
+      },
+      color: "#8B5CF6", icon: "guard",
+      products: [
+        { name: "Cisco Catalyst Center", why: {
+          es: "Zero-Touch Provisioning y automatización vía APIs REST/NETCONF y modelos YANG — adiós al CLI dispositivo por dispositivo.",
+          en: "Zero-Touch Provisioning and automation via REST/NETCONF APIs and YANG models — goodbye device-by-device CLI." } },
+        { name: "Cisco Intersight", why: {
+          es: "Aprovisionamiento y ciclo de vida de la infraestructura de cómputo como código.",
+          en: "Provisioning and lifecycle of compute infrastructure as code." } },
+        { name: "Cisco ISE", why: {
+          es: "Autenticación 802.1X: el mismo usuario recibe el mismo acceso sin importar puerto, SSID o sede.",
+          en: "802.1X authentication: the same user gets the same access regardless of port, SSID or site." } },
+        { name: "Cisco SD-Access", why: {
+          es: "Segmentación basada en identidad con Security Group Tags sobre la misma infraestructura física.",
+          en: "Identity-based segmentation with Security Group Tags over the same physical infrastructure." } },
+      ],
+    },
+    observability: {
+      key: "Observability",
+      name: { es: "Observabilidad y Telemetría", en: "Observability & Telemetry" },
+      short: {
+        es: "ThousandEyes, Meraki y Splunk: telemetría en streaming y causa raíz predictiva.",
+        en: "ThousandEyes, Meraki and Splunk: streaming telemetry and predictive root cause.",
+      },
+      color: "#00C8FF", icon: "eye",
+      products: [
+        { name: "Cisco ThousandEyes", why: {
+          es: "Visibilidad de la ruta completa hacia aplicaciones SaaS e Internet que la red no controla.",
+          en: "Full-path visibility toward SaaS apps and Internet the network doesn't control." } },
+        { name: "Cisco Catalyst Center (Assurance)", why: {
+          es: "Telemetría en streaming que reemplaza el sondeo SNMP con visibilidad granular de enlaces congestionados.",
+          en: "Streaming telemetry that replaces SNMP polling with granular visibility of congested links." } },
+        { name: "Meraki Dashboard", why: {
+          es: "Visibilidad en la nube de enlaces, dispositivos y experiencia en todas las sedes.",
+          en: "Cloud visibility of links, devices and experience across every site." } },
+        { name: "Splunk", why: {
+          es: "Analítica predictiva que identifica fallas y cuellos de botella antes de que impacten al usuario o a una corrida de entrenamiento.",
+          en: "Predictive analytics that spots failures and bottlenecks before they impact users or a training run." } },
+      ],
+    },
+  },
+
+  /* -------------------------------------------------------------------
+     SHOWCASE BOOTHS (infrastructure-relevant demo stations)
+     ------------------------------------------------------------------- */
+  booths: {
+    // ------- Networking (Juan Cervantes) -------
+    nw_unified: {
+      campus: "Networking",
+      name: { es: "Networking · Unified Secure Networking", en: "Networking · Unified Secure Networking" },
+      focus: { es: "Red segura unificada: identidad, política y visibilidad como una sola capa.",
+               en: "Unified secure networking: identity, policy and visibility as one layer." },
+      products: [],
+    },
+    nw_smart_access: {
+      campus: "Networking",
+      name: { es: "Networking · Smart Access", en: "Networking · Smart Access" },
+      focus: { es: "Acceso basado en identidad (802.1X, TrustSec) en campus y sucursal.",
+               en: "Identity-based access (802.1X, TrustSec) across campus and branch." },
+      products: [],
+    },
+    nw_secure_wan: {
+      campus: "Networking",
+      name: { es: "Networking · Secure WAN", en: "Networking · Secure WAN" },
+      focus: { es: "SD-WAN + SASE con Zero Trust integrado desde el borde.",
+               en: "SD-WAN + SASE with Zero Trust integrated from the edge." },
+      products: [],
+    },
+    nw_smart_retail: {
+      campus: "Networking",
+      name: { es: "Networking · Smart Retail", en: "Networking · Smart Retail" },
+      focus: { es: "Conectividad y visibilidad para el piso de venta y el POS.",
+               en: "Connectivity and visibility for the sales floor and POS." },
+      products: [],
+    },
+    nw_smart_spaces: {
+      campus: "Networking",
+      name: { es: "Networking · Smart Spaces", en: "Networking · Smart Spaces" },
+      focus: { es: "Ocupación, calidad del aire y experiencia con Wi-Fi como sensor.",
+               en: "Occupancy, air quality and experience with Wi-Fi as a sensor." },
+      products: [],
+    },
+
+    // ------- Security (Flavio Correa) -------
+    sec_zta: {
+      campus: "Security",
+      name: { es: "Security · Zero Trust Access", en: "Security · Zero Trust Access" },
+      focus: { es: "ZTNA con acceso basado en identidad para usuarios, dispositivos y agentes.",
+               en: "ZTNA with identity-based access for users, devices and agents." },
+      products: [],
+    },
+    sec_hmf: {
+      campus: "Security",
+      name: { es: "Security · Hybrid Mesh Firewall", en: "Security · Hybrid Mesh Firewall" },
+      focus: { es: "Perímetro consistente en Data Center, nube y sucursal.",
+               en: "Consistent perimeter across Data Center, cloud and branch." },
+      products: [],
+    },
+    sec_ifs: {
+      campus: "Security",
+      name: { es: "Security · Identity First Security", en: "Security · Identity First Security" },
+      focus: { es: "Duo, ISE e Identity Intelligence — identidad como primer control.",
+               en: "Duo, ISE and Identity Intelligence — identity as the first control." },
+      products: [],
+    },
+    sec_scc: {
+      campus: "Security",
+      name: { es: "Security · Security Cloud Control", en: "Security · Security Cloud Control" },
+      focus: { es: "Plano único de gestión y política para todo el portafolio de seguridad.",
+               en: "Single management and policy plane for the whole security portfolio." },
+      products: [],
+    },
+    sec_ai: {
+      campus: "Security",
+      name: { es: "Security · AI Security", en: "Security · AI Security" },
+      focus: { es: "Cisco AI Defense — guardrails, Shadow AI y validación de modelos.",
+               en: "Cisco AI Defense — guardrails, Shadow AI and model validation." },
+      products: [],
+    },
+    sec_aiwork: {
+      campus: "Security",
+      name: { es: "Security · Security & Observability for AI Workloads", en: "Security · Security & Observability for AI Workloads" },
+      focus: { es: "Seguridad y observabilidad para cargas de IA de punta a punta.",
+               en: "End-to-end security and observability for AI workloads." },
+      products: [],
+    },
+
+    // ------- CAI · Cloud & AI Infrastructure (Carlos Rubio) -------
+    cai_edge_holo: {
+      campus: "CAI",
+      name: { es: "CAI · Unified Edge - Holograma", en: "CAI · Unified Edge - Holograma" },
+      focus: { es: "Unified Edge en vivo — edge computing convergente demostrado con holograma.",
+               en: "Unified Edge live — converged edge computing demonstrated with a hologram." },
+      products: [],
+    },
+    cai_edge: {
+      campus: "CAI",
+      name: { es: "CAI · Unify edge", en: "CAI · Unify edge" },
+      focus: { es: "Cómputo, red y datos como una sola plataforma en el borde.",
+               en: "Compute, network and data as a single platform at the edge." },
+      products: [],
+    },
+    cai_ndb: {
+      campus: "CAI",
+      name: { es: "CAI · Data Center Networking with Nexus Dashboard", en: "CAI · Data Center Networking with Nexus Dashboard" },
+      focus: { es: "Telemetría y assurance del Data Center (ACI / NX-OS).",
+               en: "Data Center telemetry and assurance (ACI / NX-OS)." },
+      products: [],
+    },
+    cai_hyperfabric: {
+      campus: "CAI",
+      name: { es: "CAI · Scaling multi-agent systems / Hyperfabric / Secure IA Factory", en: "CAI · Scaling multi-agent systems / Hyperfabric / Secure IA Factory" },
+      focus: { es: "Cisco Secure AI Factory (con NVIDIA) para sistemas multi-agente a escala.",
+               en: "Cisco Secure AI Factory (with NVIDIA) for multi-agent systems at scale." },
+      products: [],
+    },
+    cai_stack: {
+      campus: "CAI",
+      name: { es: "CAI · Stack Automation", en: "CAI · Stack Automation" },
+      focus: { es: "Infraestructura como código con Intersight y automatización full-stack.",
+               en: "Infrastructure as code with Intersight and full-stack automation." },
+      products: [],
+    },
+    cai_smartsw: {
+      campus: "CAI",
+      name: { es: "CAI · Smart switch", en: "CAI · Smart switch" },
+      focus: { es: "Cisco Smart Switch (N9300): enforcement y observabilidad en el silicio.",
+               en: "Cisco Smart Switch (N9300): silicon-embedded enforcement and observability." },
+      products: [],
+    },
+    cai_compute: {
+      campus: "CAI",
+      name: { es: "CAI · Compute / Intersight /unify edge / hiperconvergencia /AI", en: "CAI · Compute / Intersight /unify edge / hiperconvergencia /AI" },
+      focus: { es: "Cómputo GPU-ready, hiperconvergencia y operación como código.",
+               en: "GPU-ready compute, hyperconvergence and management as code." },
+      products: [],
+    },
+
+    // ------- Collaboration (Arturo Prieto & Vero Diaz) -------
+    col_exec: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Executive Room (Mezzanine)", en: "Collaboration · Executive Room (Mezzanine)" },
+      focus: { es: "Sala ejecutiva Webex: reuniones inmersivas de alto nivel.",
+               en: "Webex executive room: high-end immersive meetings." },
+      products: [],
+    },
+    col_connect: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Connect Room", en: "Collaboration · Connect Room" },
+      focus: { es: "Colaboración híbrida con Webex Rooms.",
+               en: "Hybrid collaboration with Webex Rooms." },
+      products: [],
+    },
+    col_interop: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Interoperability", en: "Collaboration · Interoperability" },
+      focus: { es: "Interoperabilidad Webex con MS Teams, Zoom y salas de terceros.",
+               en: "Webex interop with MS Teams, Zoom and third-party rooms." },
+      products: [],
+    },
+    col_contact: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Webex Contact Center", en: "Collaboration · Webex Contact Center" },
+      focus: { es: "Contact center en la nube con IA integrada.",
+               en: "Cloud contact center with integrated AI." },
+      products: [],
+    },
+    col_calling: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Webex Calling & Webex Suite", en: "Collaboration · Webex Calling & Webex Suite" },
+      focus: { es: "Telefonía y colaboración en la nube.",
+               en: "Cloud telephony and collaboration." },
+      products: [],
+    },
+    col_workspaces: {
+      campus: "Collaboration",
+      name: { es: "Collaboration · Smart Workspaces", en: "Collaboration · Smart Workspaces" },
+      focus: { es: "Espacios de trabajo inteligentes con Webex y Meraki.",
+               en: "Intelligent workspaces with Webex and Meraki." },
+      products: [],
+    },
+
+    // ------- ThousandEyes (Carlos Venegas) -------
+    te_agentic: {
+      campus: "ThousandEyes",
+      name: { es: "ThousandEyes · ThousandEyes Agentic Operations", en: "ThousandEyes · ThousandEyes Agentic Operations" },
+      focus: { es: "Agentes de IA para observabilidad de red autónoma.",
+               en: "AI agents for autonomous network observability." },
+      products: [],
+    },
+    te_insights: {
+      campus: "ThousandEyes",
+      name: { es: "ThousandEyes · Traffic Insights, Cloud Insights", en: "ThousandEyes · Traffic Insights, Cloud Insights" },
+      focus: { es: "Visibilidad de flujos y de nube pública de punta a punta.",
+               en: "End-to-end flow and public-cloud visibility." },
+      products: [],
+    },
+    te_assurance: {
+      campus: "ThousandEyes",
+      name: { es: "ThousandEyes · Cisco Architectures + Network Assurance", en: "ThousandEyes · Cisco Architectures + Network Assurance" },
+      focus: { es: "Assurance de red integral sobre las arquitecturas Cisco.",
+               en: "End-to-end network assurance over Cisco architectures." },
+      products: [],
+    },
+
+    // ------- Observability (Cleber) -------
+    obs_agent: {
+      campus: "Observability",
+      name: { es: "Observability · Agent Observability", en: "Observability · Agent Observability" },
+      focus: { es: "Monitoreo del comportamiento y desempeño de agentes de IA.",
+               en: "Monitoring behavior and performance of AI agents." },
+      products: [],
+    },
+    obs_itsi: {
+      campus: "Observability",
+      name: { es: "Observability · Splunk ITSI", en: "Observability · Splunk ITSI" },
+      focus: { es: "Splunk IT Service Intelligence: AIOps y salud de servicios.",
+               en: "Splunk IT Service Intelligence: AIOps and service health." },
+      products: [],
+    },
+    obs_cloud: {
+      campus: "Observability",
+      name: { es: "Observability · Splunk Observability Cloud", en: "Observability · Splunk Observability Cloud" },
+      focus: { es: "APM, trazas distribuidas y métricas de Kubernetes OTel-native.",
+               en: "APM, distributed traces and Kubernetes metrics, OTel-native." },
+      products: [],
+    },
+    obs_datafabric: {
+      campus: "Observability",
+      name: { es: "Observability · Cisco Data Fabric", en: "Observability · Cisco Data Fabric" },
+      focus: { es: "Capa unificada de datos para observabilidad full-stack.",
+               en: "Unified data layer for full-stack observability." },
+      products: [],
+    },
+
+    // ------- Service Providers (Christian Calixto) -------
+    sp_agile: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · End to End Agile Services Networking", en: "Service Providers · End to End Agile Services Networking" },
+      focus: { es: "Agile Services Networking de punta a punta para operadores.",
+               en: "End-to-end Agile Services Networking for operators." },
+      products: [],
+    },
+    sp_siliconone: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · Sillicon One Platforms and RON transceivers", en: "Service Providers · Sillicon One Platforms and RON transceivers" },
+      focus: { es: "Silicon One y transceivers RON: escala para IA y backbone.",
+               en: "Silicon One and RON transceivers: AI and backbone scale." },
+      products: [],
+    },
+    sp_ai_conn: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · Scale Connectivity for AI: Cisco Routed Networking and SRv6", en: "Service Providers · Scale Connectivity for AI: Cisco Routed Networking and SRv6" },
+      focus: { es: "Cisco Routed Networking y SRv6 para conectividad de IA a escala.",
+               en: "Cisco Routed Networking and SRv6 for AI connectivity at scale." },
+      products: [],
+    },
+    sp_agentic: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · Service Providers Agentic Operations", en: "Service Providers · Service Providers Agentic Operations" },
+      focus: { es: "Operación autónoma con agentes de IA para el operador.",
+               en: "Autonomous operations with AI agents for operators." },
+      products: [],
+    },
+    sp_security: {
+      campus: "Service Providers",
+      name: { es: "Service Providers · Cisco Service Provider Security", en: "Service Providers · Cisco Service Provider Security" },
+      focus: { es: "Protección de la infraestructura del operador.",
+               en: "Operator infrastructure protection." },
+      products: [],
+    },
+
+    // ------- Industrial IOT (Fayce) -------
+    iot_cybervision: {
+      campus: "Industrial IOT",
+      name: { es: "Industrial IOT · Cisco Cyber Vision - Industrial Segmentation & Remote Access", en: "Industrial IOT · Cisco Cyber Vision - Industrial Segmentation & Remote Access" },
+      focus: { es: "Cisco Cyber Vision: segmentación industrial y acceso remoto seguro.",
+               en: "Cisco Cyber Vision: industrial segmentation and secure remote access." },
+      products: [],
+    },
+    iot_ie: {
+      campus: "Industrial IOT",
+      name: { es: "Industrial IOT · Cisco Industrial Switches on Meraki Dashboard", en: "Industrial IOT · Cisco Industrial Switches on Meraki Dashboard" },
+      focus: { es: "Switches industriales Cisco gestionados desde Meraki Dashboard.",
+               en: "Cisco industrial switches managed from Meraki Dashboard." },
+      products: [],
+    },
+    iot_utilities: {
+      campus: "Industrial IOT",
+      name: { es: "Industrial IOT · Win utilities: Scale and manage grid networks", en: "Industrial IOT · Win utilities: Scale and manage grid networks" },
+      focus: { es: "Escala y gestión de redes de servicios públicos (utilities).",
+               en: "Scale and manage utility grid networks." },
+      products: [],
+    },
+  },
+
+
+  /* -------------------------------------------------------------------
+     INDUSTRIES × USE CASES  (from Angel's Infrastructure blueprint)
+     ------------------------------------------------------------------- */
+  industries: {
+    retail: {
+      name: { es: "Retail", en: "Retail" }, icon: "cart",
+      tagline: { es: "Tienda conectada, del piso de venta a la nube.", en: "Connected store, from sales floor to cloud." },
+      useCases: [
+        {
+          id: "retail-store-connect",
+          title: { es: "Conectividad de tienda estandarizada", en: "Standardized store connectivity" },
+          desc: { es: "Abrir una tienda nueva con la misma calidad de red y seguridad desde el día uno.",
+                   en: "Open a new store with the same network quality and security from day one." },
+          securityChallenge: {
+            es: "Configurar cada tienda a mano es lento, inconsistente y no escala a cientos de sitios.",
+            en: "Configuring each store by hand is slow, inconsistent and doesn't scale to hundreds of sites." },
+          pillars: ["switching", "wireless", "platform"],
+          products: ["Cisco Catalyst 9300", "Cisco Catalyst 9100/9200 Access Points", "Cisco Catalyst Center"],
+          booths: ["cai_smartsw", "nw_smart_access", "cai_stack"],
+          recommendation: {
+            es: "Catalyst 9300 y APs Wi-Fi 6E se despliegan con Zero-Touch Provisioning; la política de seguridad es idéntica desde el arranque.",
+            en: "Catalyst 9300 and Wi-Fi 6E APs deploy with Zero-Touch Provisioning; the security policy is identical from boot." },
+        },
+        {
+          id: "retail-pos-iot",
+          title: { es: "Segmentación de POS e IoT", en: "POS and IoT segmentation" },
+          desc: { es: "Cajas, cámaras, etiquetas electrónicas y red de invitados sobre la misma infraestructura física.",
+                   en: "Registers, cameras, e-labels and guest network over the same physical infrastructure." },
+          securityChallenge: {
+            es: "Mezclar POS, IoT y visitantes en la misma red plana expone datos de pago a movimiento lateral.",
+            en: "Mixing POS, IoT and guests on the same flat network exposes payment data to lateral movement." },
+          pillars: ["platform", "switching"],
+          products: ["Cisco ISE", "Cisco SD-Access", "Cisco Catalyst 9000"],
+          booths: ["cai_stack", "cai_smartsw"],
+          recommendation: {
+            es: "Los Security Group Tags de SD-Access aíslan cada dominio sobre la misma infraestructura, sin VLANs manuales.",
+            en: "SD-Access Security Group Tags isolate each domain over the same infrastructure, with no manual VLANs." },
+        },
+        {
+          id: "retail-cv",
+          title: { es: "Visión computacional en el piso de venta", en: "Computer vision on the sales floor" },
+          desc: { es: "Detectar comportamiento sospechoso y errores de cobro en tiempo real.",
+                   en: "Detect suspicious behavior and checkout errors in real time." },
+          securityChallenge: {
+            es: "Enviar todo el video al Data Center satura el enlace y agrega latencia inútil.",
+            en: "Sending all video to the Data Center saturates the link and adds useless latency." },
+          pillars: ["wireless", "observability"],
+          products: ["Meraki MV", "Meraki Dashboard", "Cisco Catalyst 9100/9200 Access Points"],
+          booths: ["nw_smart_access", "te_assurance"],
+          recommendation: {
+            es: "Las cámaras Meraki MV corren analítica embebida y procesan en el borde, sin backhaul de video.",
+            en: "Meraki MV cameras run embedded analytics and process at the edge, with no video backhaul." },
+        },
+        {
+          id: "retail-ux",
+          title: { es: "Experiencia de usuario medible", en: "Measurable user experience" },
+          desc: { es: "Saber por qué la app móvil va lenta, con datos y no con suposiciones.",
+                   en: "Know why the mobile app is slow, with data instead of guesses." },
+          securityChallenge: {
+            es: "Sin visibilidad, la lentitud se atribuye a la app cuando puede ser saturación de AP o del enlace.",
+            en: "Without visibility, slowness is blamed on the app when it may be AP or link saturation." },
+          pillars: ["observability", "wireless"],
+          products: ["Cisco Catalyst Center", "Cisco ThousandEyes", "Meraki Dashboard"],
+          booths: ["te_assurance", "nw_smart_access"],
+          recommendation: {
+            es: "Catalyst Center correlaciona la experiencia de la app con la salud del AP y del enlace en tiempo real.",
+            en: "Catalyst Center correlates app experience with AP and link health in real time." },
+        },
+        {
+          id: "retail-multisite",
+          title: { es: "Operación multisitio", en: "Multi-site operations" },
+          desc: { es: "Administrar cientos de tiendas sin escalar el personal en la misma proporción.",
+                   en: "Manage hundreds of stores without scaling staff at the same rate." },
+          securityChallenge: {
+            es: "La gestión sitio por sitio consume al equipo y frena la expansión.",
+            en: "Site-by-site management drains the team and slows expansion." },
+          pillars: ["platform", "observability"],
+          products: ["Cisco Catalyst Center", "Meraki Dashboard", "Cisco Intersight"],
+          booths: ["cai_stack", "te_assurance"],
+          recommendation: {
+            es: "Un equipo central administra todas las tiendas desde un solo panel con automatización por API.",
+            en: "A central team runs all stores from a single pane with API-driven automation." },
+        },
+      ],
+    },
+
+    financial: {
+      name: { es: "Servicios Financieros", en: "Financial Services" }, icon: "bank",
+      tagline: { es: "Sucursal segura y elástica, en producción en menos de un día.", en: "Secure, elastic branch in production in under a day." },
+      useCases: [
+        {
+          id: "fin-branch-fast",
+          title: { es: "Sucursal en producción en menos de un día", en: "Branch in production in under a day" },
+          desc: { es: "Levantar una sucursal completa sin que un ingeniero viaje al sitio.",
+                   en: "Stand up a full branch without an engineer traveling on-site." },
+          securityChallenge: {
+            es: "Enviar personal a cada sucursal a configurar equipos es caro, lento y propenso a error.",
+            en: "Sending staff to each branch to configure gear is costly, slow and error-prone." },
+          pillars: ["routing", "platform", "wireless"],
+          products: ["Cisco Catalyst 8300", "Cisco Catalyst 9000", "Cisco Catalyst Center"],
+          booths: ["nw_secure_wan", "cai_stack"],
+          recommendation: {
+            es: "Router, switch y APs se aprovisionan solos con Zero-Touch; el sitio queda operando el mismo día.",
+            en: "Router, switch and APs self-provision with Zero-Touch; the site is operating the same day." },
+        },
+        {
+          id: "fin-core-priority",
+          title: { es: "Priorización del core bancario", en: "Prioritizing the banking core" },
+          desc: { es: "Garantizar que las transacciones y Webex tengan siempre el mejor enlace.",
+                   en: "Ensure transactions and Webex always get the best link." },
+          securityChallenge: {
+            es: "Cuando un respaldo satura el enlace, las transacciones críticas sufren y el cliente lo nota.",
+            en: "When a backup saturates the link, critical transactions suffer and the customer notices." },
+          pillars: ["routing"],
+          products: ["Cisco Catalyst SD-WAN", "Cisco Catalyst 8000 Edge"],
+          booths: ["nw_secure_wan"],
+          recommendation: {
+            es: "SD-WAN identifica la aplicación y garantiza SLA al core y a Webex, desviando respaldos al enlace de Internet.",
+            en: "SD-WAN identifies the application and guarantees SLA to the core and Webex, offloading backups to the Internet link." },
+        },
+        {
+          id: "fin-zero-trust",
+          title: { es: "Zero Trust por identidad", en: "Zero Trust by identity" },
+          desc: { es: "Que cada quien acceda solo a lo que le corresponde, sin importar el puerto.",
+                   en: "Everyone accesses only what they should, regardless of the port." },
+          securityChallenge: {
+            es: "En una red por topología, conectar una cámara al puerto equivocado abre acceso indebido.",
+            en: "In a topology-based network, plugging a camera into the wrong port opens undue access." },
+          pillars: ["platform"],
+          products: ["Cisco ISE", "Cisco SD-Access"],
+          booths: ["cai_stack"],
+          recommendation: {
+            es: "ISE autentica con 802.1X: el cajero llega al core, el visitante solo a Internet y la cámara queda aislada aunque cambie de puerto.",
+            en: "ISE authenticates with 802.1X: the teller reaches the core, the visitor only the Internet and the camera stays isolated even if it changes port." },
+        },
+        {
+          id: "fin-compliance",
+          title: { es: "Cumplimiento y trazabilidad", en: "Compliance and traceability" },
+          desc: { es: "Sostener auditorías regulatorias sin recolección manual de evidencia.",
+                   en: "Sustain regulatory audits without manual evidence gathering." },
+          securityChallenge: {
+            es: "Reunir logs de decenas de sucursales a mano no resiste una auditoría de CNBV/Banxico.",
+            en: "Gathering logs from dozens of branches by hand won't survive a CNBV/Banxico audit." },
+          pillars: ["observability"],
+          products: ["Splunk", "Cisco Catalyst Center"],
+          booths: ["te_assurance"],
+          recommendation: {
+            es: "Telemetría continua y logs centralizados en Splunk sostienen la auditoría con evidencia automática.",
+            en: "Continuous telemetry and centralized logs in Splunk sustain the audit with automatic evidence." },
+        },
+        {
+          id: "fin-continuity",
+          title: { es: "Continuidad operativa", en: "Operational continuity" },
+          desc: { es: "Mantener la sucursal operando ante la caída de un transporte.",
+                   en: "Keep the branch running through the loss of a transport." },
+          securityChallenge: {
+            es: "Un único enlace convierte cualquier corte del proveedor en una sucursal detenida.",
+            en: "A single link turns any provider outage into a stopped branch." },
+          pillars: ["routing", "switching"],
+          products: ["Cisco Catalyst SD-WAN", "Cisco Catalyst 9000"],
+          booths: ["nw_secure_wan", "cai_smartsw"],
+          recommendation: {
+            es: "Doble enlace, stacking y failover automático mantienen la operación ante la caída de un transporte.",
+            en: "Dual link, stacking and automatic failover keep operations up through a transport failure." },
+        },
+      ],
+    },
+
+    distribution: {
+      name: { es: "Centros de Distribución", en: "Distribution Centers" }, icon: "box",
+      tagline: { es: "Almacén automatizado, del muelle al robot.", en: "Automated warehouse, from dock to robot." },
+      useCases: [
+        {
+          id: "dist-urwb",
+          title: { es: "Backhaul inalámbrico ultraconfiable", en: "Ultra-reliable wireless backhaul" },
+          desc: { es: "Conectividad continua para robots móviles (AGV/AMR) en movimiento entre pasillos y muelles.",
+                   en: "Continuous connectivity for mobile robots (AGV/AMR) moving between aisles and docks." },
+          securityChallenge: {
+            es: "El Wi-Fi tradicional pierde el enlace en el roaming y detiene al robot a media operación.",
+            en: "Traditional Wi-Fi drops the link on roaming and stops the robot mid-operation." },
+          pillars: ["wireless"],
+          products: ["Cisco URWB", "Cisco Catalyst 9100/9200 Access Points"],
+          booths: ["iot_ie", "nw_smart_access"],
+          recommendation: {
+            es: "Cisco URWB mantiene conectividad continua y determinística para los AGV/AMR en movimiento.",
+            en: "Cisco URWB keeps continuous, deterministic connectivity for AGVs/AMRs on the move." },
+        },
+        {
+          id: "dist-industrial",
+          title: { es: "Cobertura industrial robusta", en: "Rugged industrial coverage" },
+          desc: { es: "Red que opera con polvo, vibración y rangos térmicos amplios.",
+                   en: "A network that operates with dust, vibration and wide thermal ranges." },
+          securityChallenge: {
+            es: "El hardware de oficina falla en el piso del almacén y genera cortes intermitentes.",
+            en: "Office-grade hardware fails on the warehouse floor and causes intermittent outages." },
+          pillars: ["switching"],
+          products: ["Cisco Industrial Ethernet", "Cisco Catalyst 9000"],
+          booths: ["iot_ie", "cai_smartsw"],
+          recommendation: {
+            es: "Los switches Cisco Industrial Ethernet están diseñados para el entorno industrial donde el hardware común falla.",
+            en: "Cisco Industrial Ethernet switches are built for the industrial environment where common hardware fails." },
+        },
+        {
+          id: "dist-pdm",
+          title: { es: "Mantenimiento predictivo de bandas", en: "Predictive conveyor maintenance" },
+          desc: { es: "Anticipar fallas de los sistemas de clasificación antes de una parada de producción.",
+                   en: "Anticipate sorting-system failures before a production stop." },
+          securityChallenge: {
+            es: "Sin telemetría de los sensores, la falla mecánica se descubre cuando la banda ya paró.",
+            en: "Without sensor telemetry, mechanical failure is discovered only after the conveyor has stopped." },
+          pillars: ["observability", "switching"],
+          products: ["Cisco Industrial Ethernet", "Splunk", "Meraki Dashboard"],
+          booths: ["iot_ie", "te_assurance"],
+          recommendation: {
+            es: "Sensores sobre red industrial reportan vibración y temperatura, y la analítica anticipa la falla.",
+            en: "Sensors over the industrial network report vibration and temperature, and analytics anticipate the failure." },
+        },
+        {
+          id: "dist-otit",
+          title: { es: "Segmentación OT/IT", en: "OT/IT segmentation" },
+          desc: { es: "Separar la red de automatización de la red administrativa.",
+                   en: "Separate the automation network from the administrative network." },
+          securityChallenge: {
+            es: "Una red plana permite que una amenaza de IT alcance el control físico del almacén.",
+            en: "A flat network lets an IT threat reach the warehouse's physical control." },
+          pillars: ["platform", "switching"],
+          products: ["Cisco SD-Access", "Cisco ISE", "Cisco Cyber Vision"],
+          booths: ["cai_stack", "iot_ie"],
+          recommendation: {
+            es: "SD-Access separa OT e IT en dominios de política independientes, reduciendo la superficie de ataque lateral.",
+            en: "SD-Access separates OT and IT into independent policy domains, cutting the lateral attack surface." },
+        },
+        {
+          id: "dist-traceability",
+          title: { es: "Trazabilidad end-to-end", en: "End-to-end traceability" },
+          desc: { es: "Lectores RFID y terminales de radiofrecuencia sobre una sola infraestructura gestionada.",
+                   en: "RFID readers and RF terminals over a single managed infrastructure." },
+          securityChallenge: {
+            es: "Redes separadas para cada sistema de captura multiplican el costo y los puntos de falla.",
+            en: "Separate networks for each capture system multiply cost and points of failure." },
+          pillars: ["wireless", "platform"],
+          products: ["Cisco Catalyst 9100/9200 Access Points", "Cisco Catalyst Center"],
+          booths: ["nw_smart_access", "cai_stack"],
+          recommendation: {
+            es: "RFID y terminales de radiofrecuencia operan sobre el mismo Wi-Fi gestionado centralmente.",
+            en: "RFID and RF terminals run over the same centrally managed Wi-Fi." },
+        },
+      ],
+    },
+
+    transportation: {
+      name: { es: "Transporte", en: "Transportation" }, icon: "truck",
+      tagline: { es: "Activos en movimiento, siempre conectados.", en: "Assets on the move, always connected." },
+      useCases: [
+        {
+          id: "trans-mobile",
+          title: { es: "Conectividad en movimiento", en: "Connectivity on the move" },
+          desc: { es: "Conectividad LTE/5G para flotas, trenes y unidades de campo con failover entre operadores.",
+                   en: "LTE/5G connectivity for fleets, trains and field units with carrier failover." },
+          securityChallenge: {
+            es: "Un solo operador móvil deja al vehículo sin conexión en zonas de baja cobertura.",
+            en: "A single mobile carrier leaves the vehicle offline in low-coverage areas." },
+          pillars: ["routing"],
+          products: ["Cisco IR1800", "Cisco IR1101"],
+          booths: ["nw_secure_wan", "iot_ie"],
+          recommendation: {
+            es: "Los routers Cisco IR1800/IR1101 dan conectividad LTE/5G con failover automático entre operadores.",
+            en: "Cisco IR1800/IR1101 routers provide LTE/5G connectivity with automatic carrier failover." },
+        },
+        {
+          id: "trans-edge",
+          title: { es: "Edge computing a bordo", en: "On-board edge computing" },
+          desc: { es: "Procesar video y telemetría en el vehículo y enviar solo lo relevante.",
+                   en: "Process video and telemetry in the vehicle and send only what matters." },
+          securityChallenge: {
+            es: "Transmitir todo el video en vivo por LTE/5G es caro y poco práctico.",
+            en: "Streaming all live video over LTE/5G is expensive and impractical." },
+          pillars: ["compute", "routing"],
+          products: ["Cisco IR1800", "Cisco UCS C-Series"],
+          booths: ["cai_compute", "nw_secure_wan"],
+          recommendation: {
+            es: "El procesamiento local envía solo eventos relevantes, reduciendo drásticamente el costo de transporte de datos.",
+            en: "Local processing sends only relevant events, drastically reducing data-transport cost." },
+        },
+        {
+          id: "trans-roadside",
+          title: { es: "Monitoreo de infraestructura vial", en: "Roadside infrastructure monitoring" },
+          desc: { es: "Conectar semáforos, cámaras y sensores en gabinetes de intemperie.",
+                   en: "Connect traffic lights, cameras and sensors in outdoor cabinets." },
+          securityChallenge: {
+            es: "Equipos de interior fallan en gabinetes expuestos a calor, humedad y polvo.",
+            en: "Indoor gear fails in cabinets exposed to heat, humidity and dust." },
+          pillars: ["switching", "wireless"],
+          products: ["Cisco Industrial Ethernet", "Cisco Catalyst 9100/9200 Access Points"],
+          booths: ["iot_ie", "nw_smart_access"],
+          recommendation: {
+            es: "Switches industriales y APs robustos conectan la infraestructura vial en intemperie de forma confiable.",
+            en: "Industrial switches and rugged APs reliably connect roadside infrastructure outdoors." },
+        },
+        {
+          id: "trans-fleet-mgmt",
+          title: { es: "Gestión centralizada de miles de nodos", en: "Centralized management of thousands of nodes" },
+          desc: { es: "Administrar unidades distribuidas geográficamente desde un solo panel.",
+                   en: "Manage geographically distributed units from a single pane." },
+          securityChallenge: {
+            es: "Gestionar miles de nodos móviles uno por uno es inviable operativamente.",
+            en: "Managing thousands of mobile nodes one by one is operationally unfeasible." },
+          pillars: ["platform", "observability"],
+          products: ["Meraki Dashboard", "Cisco Catalyst Center"],
+          booths: ["cai_stack", "te_assurance"],
+          recommendation: {
+            es: "Meraki Dashboard administra las unidades distribuidas desde un solo panel en la nube.",
+            en: "Meraki Dashboard manages the distributed units from a single cloud pane." },
+        },
+        {
+          id: "trans-asset-sec",
+          title: { es: "Seguridad del activo móvil", en: "Mobile asset security" },
+          desc: { es: "Que cada vehículo se autentique como un endpoint más de la red corporativa.",
+                   en: "Each vehicle authenticates as one more endpoint of the corporate network." },
+          securityChallenge: {
+            es: "Un vehículo sin identidad de red es un punto ciego y un riesgo de acceso no controlado.",
+            en: "A vehicle with no network identity is a blind spot and an uncontrolled-access risk." },
+          pillars: ["platform"],
+          products: ["Cisco ISE", "Cisco IR1800"],
+          booths: ["cai_stack", "nw_secure_wan"],
+          recommendation: {
+            es: "Cada vehículo se autentica con política y cifrado consistentes con la red corporativa.",
+            en: "Each vehicle authenticates with policy and encryption consistent with the corporate network." },
+        },
+      ],
+    },
+
+    manufacturing: {
+      name: { es: "Manufactura", en: "Manufacturing" }, icon: "factory",
+      tagline: { es: "Planta conectada y segura, sin paros no planeados.", en: "Connected, secure plant with no unplanned downtime." },
+      useCases: [
+        {
+          id: "mfg-deterministic",
+          title: { es: "Red determinística para la línea", en: "Deterministic network for the line" },
+          desc: { es: "Latencia predecible para los sistemas de control industrial.",
+                   en: "Predictable latency for industrial control systems." },
+          securityChallenge: {
+            es: "Una red con jitter variable rompe los ciclos de control y detiene la línea.",
+            en: "A network with variable jitter breaks control loops and stops the line." },
+          pillars: ["switching"],
+          products: ["Cisco Industrial Ethernet", "Cisco Catalyst 9000"],
+          booths: ["iot_ie", "cai_smartsw"],
+          recommendation: {
+            es: "Cisco Industrial Ethernet con TSN entrega la latencia predecible que exigen los sistemas de control.",
+            en: "Cisco Industrial Ethernet with TSN delivers the predictable latency control systems demand." },
+        },
+        {
+          id: "mfg-quality",
+          title: { es: "Inspección de calidad conectada", en: "Connected quality inspection" },
+          desc: { es: "Los sistemas de visión envían imágenes a alta tasa sin competir con el tráfico administrativo.",
+                   en: "Vision systems send images at a high rate without competing with administrative traffic." },
+          securityChallenge: {
+            es: "Sin priorización, el tráfico de oficina interfiere con la inspección en la línea.",
+            en: "Without prioritization, office traffic interferes with in-line inspection." },
+          pillars: ["switching", "observability"],
+          products: ["Cisco Industrial Ethernet", "Cisco Catalyst Center"],
+          booths: ["iot_ie", "te_assurance"],
+          recommendation: {
+            es: "La red industrial prioriza el tráfico de visión para que la inspección opere sin interferencia.",
+            en: "The industrial network prioritizes vision traffic so inspection runs without interference." },
+        },
+        {
+          id: "mfg-otsec",
+          title: { es: "Ciberseguridad OT", en: "OT cybersecurity" },
+          desc: { es: "Descubrir activos industriales y detectar patrones anómalos en el ICS sin agentes.",
+                   en: "Discover industrial assets and detect anomalous ICS patterns with no agents." },
+          securityChallenge: {
+            es: "Los ICS no fueron diseñados para ciberseguridad y son invisibles para el SOC tradicional.",
+            en: "ICS were not designed for cybersecurity and are invisible to the traditional SOC." },
+          pillars: ["platform", "observability"],
+          products: ["Cisco Cyber Vision", "Cisco Industrial Ethernet"],
+          booths: ["iot_ie"],
+          recommendation: {
+            es: "Cisco Cyber Vision descubre activos, mapea comunicaciones y detecta anomalías en el ICS sin agentes.",
+            en: "Cisco Cyber Vision discovers assets, maps communications and detects ICS anomalies with no agents." },
+        },
+        {
+          id: "mfg-itot",
+          title: { es: "Convergencia IT/OT controlada", en: "Controlled IT/OT convergence" },
+          desc: { es: "Que planta y corporativo compartan infraestructura con dominios de política independientes.",
+                   en: "Let plant and corporate share infrastructure with independent policy domains." },
+          securityChallenge: {
+            es: "Converger IT y OT sin control expone la planta a amenazas que antes no la alcanzaban.",
+            en: "Converging IT and OT without control exposes the plant to threats that couldn't reach it before." },
+          pillars: ["platform"],
+          products: ["Cisco SD-Access", "Cisco ISE"],
+          booths: ["cai_stack"],
+          recommendation: {
+            es: "SD-Access permite compartir la infraestructura física manteniendo dominios de política separados para planta y corporativo.",
+            en: "SD-Access lets plant and corporate share physical infrastructure while keeping separate policy domains." },
+        },
+        {
+          id: "mfg-availability",
+          title: { es: "Disponibilidad como requisito de negocio", en: "Availability as a business requirement" },
+          desc: { es: "Evitar que una falla de red detenga la producción.",
+                   en: "Prevent a network failure from stopping production." },
+          securityChallenge: {
+            es: "En manufactura, cada minuto de paro por red cuesta miles y no es aceptable.",
+            en: "In manufacturing, every minute of network downtime costs thousands and is unacceptable." },
+          pillars: ["switching", "routing"],
+          products: ["Cisco Industrial Ethernet", "Cisco Catalyst 9000"],
+          booths: ["cai_smartsw", "iot_ie"],
+          recommendation: {
+            es: "Anillos redundantes y convergencia en milisegundos evitan que una falla de red detenga la producción.",
+            en: "Redundant rings and millisecond convergence keep a network failure from stopping production." },
+        },
+      ],
+    },
+  },
+
+  /* -------------------------------------------------------------------
+     UI STRINGS (ES / EN)
+     ------------------------------------------------------------------- */
+  ui: {
+    attract_kicker: { es: "Cisco AI Bridge · Cisco Connect Cancún 2026", en: "Cisco AI Bridge · Cisco Connect Cancún 2026" },
+    attract_title: { es: "Infrastructure Blueprint", en: "Infrastructure Blueprint" },
+    attract_sub: { es: "La base física para la era de la IA: del switch al servidor.", en: "The physical foundation for the AI era: from switch to server." },
+    attract_cta: { es: "Toca para comenzar", en: "Tap to begin" },
+    lang_label: { es: "EN", en: "ES" },
+
+    path_title: { es: "¿Cómo quieres explorar?", en: "How do you want to explore?" },
+    path_exp_title: { es: "Ya sé mi caso de uso", en: "I know my use case" },
+    path_exp_desc: { es: "Cuéntame tu caso de uso y te muestro cómo la infraestructura Cisco lo habilita y qué booths visitar.",
+                     en: "Tell me your use case and I'll show how Cisco infrastructure enables it and which booths to visit." },
+    path_new_title: { es: "Ayúdame a descubrirlo", en: "Help me discover it" },
+    path_new_desc: { es: "Elige tu industria y te guío por los casos de uso de infraestructura que identificamos para ti.",
+                     en: "Pick your industry and I'll guide you through the infrastructure use cases we identified for you." },
+
+    industry_title: { es: "Selecciona tu industria", en: "Select your industry" },
+    usecase_title: { es: "Selecciona tu caso de uso", en: "Select your use case" },
+    usecase_title_new: { es: "Casos de uso que identificamos", en: "Use cases we identified" },
+
+    result_challenge: { es: "El reto de infraestructura", en: "The infrastructure challenge" },
+    result_pillars: { es: "Pilares de infraestructura que aplican", en: "Infrastructure pillars that apply" },
+    result_products: { es: "Portafolio Cisco recomendado", en: "Recommended Cisco portfolio" },
+    result_reco: { es: "Cómo Cisco lo habilita", en: "How Cisco enables it" },
+    result_booths: { es: "Booths que debes visitar", en: "Booths you should visit" },
+
+    btn_back: { es: "Atrás", en: "Back" },
+    btn_restart: { es: "Empezar de nuevo", en: "Start over" },
+    btn_explore_pillars: { es: "Ver los 6 pilares", en: "See the 6 pillars" },
+    pillars_title: { es: "Blueprint de Infraestructura · 6 Pilares", en: "Infrastructure Blueprint · 6 Pillars" },
+    pillars_hint: { es: "Toca un pilar para ver los productos Cisco y por qué están ahí", en: "Tap a pillar to see the Cisco products and why they belong there" },
+    pillar_products: { es: "Productos Cisco que lo habilitan", en: "Cisco products that enable it" },
+    pillar_why: { es: "Por qué", en: "Why" },
+    pillar_back: { es: "Volver a los 6 pilares", en: "Back to the 6 pillars" },
+
+    footer: { es: "Cisco AI Bridge · Cisco Connect Cancún 2026 · © Cisco Systems México",
+              en: "Cisco AI Bridge · Cisco Connect Cancún 2026 · © Cisco Systems Mexico" },
+  },
+};
+
+const initialLang=(function(){try{const u=new URL(location.href);const q=u.searchParams.get('lang');if(q==='es'||q==='en')return q;const ls=localStorage.getItem('cisco.aibridge.lang');if(ls==='es'||ls==='en')return ls;}catch(e){}return 'es';})();
+const state={lang:initialLang,screen:'attract',path:null,industry:null,useCase:null,pillar:null};
+function persistLang(){try{localStorage.setItem('cisco.aibridge.lang',state.lang);const u=new URL(location.href);u.searchParams.set('lang',state.lang);history.replaceState(null,'',u);}catch(e){}}
+function goHub(){location.href='../landing/index.html?lang='+encodeURIComponent(state.lang);}
+const app=document.getElementById('app'), overlay=document.getElementById('pillarOverlay');
+const accents=['#16BDEB','#3070E7','#22C55E','#FF9000','#FF007F'];
+const t=(v)=>v&&typeof v==='object'&&('es'in v||'en'in v)?v[state.lang]:v;
+const ui=(k)=>t(BOOTH_DATA.ui[k]);
+const esc=(s)=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+function icon(name){const common='viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"'; const p={
+id:`<rect x="12" y="14" width="40" height="36" rx="8"/><circle cx="32" cy="29" r="6"/><path d="M22 43c4-8 16-8 20 0"/>`, 'shield-lock':`<path d="M32 6l21 8v16c0 14-9 23-21 28C20 53 11 44 11 30V14l21-8z"/><rect x="24" y="29" width="16" height="13" rx="3"/><path d="M27 29v-5a5 5 0 0110 0v5"/>`, grid:`<rect x="10" y="10" width="18" height="18" rx="4"/><rect x="36" y="10" width="18" height="18" rx="4"/><rect x="10" y="36" width="18" height="18" rx="4"/><rect x="36" y="36" width="18" height="18" rx="4"/>`, eye:`<path d="M5 32s10-16 27-16 27 16 27 16-10 16-27 16S5 32 5 32z"/><circle cx="32" cy="32" r="8"/>`, radar:`<circle cx="32" cy="32" r="23"/><circle cx="32" cy="32" r="7"/><path d="M32 32l17-15M32 9v7M32 48v7M9 32h7M48 32h7"/>`, 'brick-wall':`<path d="M8 18h48v32H8zM8 29h48M8 40h48M20 18v11M44 18v11M32 29v11M20 40v10M44 40v10"/>`, guard:`<path d="M32 6l20 9v14c0 14-8 23-20 29-12-6-20-15-20-29V15l20-9z"/><path d="M24 33l6 6 12-15"/>`, code:`<path d="M24 20L12 32l12 12M40 20l12 12-12 12M35 14l-6 36"/>`, branch:`<circle cx="18" cy="18" r="6"/><circle cx="46" cy="18" r="6"/><circle cx="32" cy="48" r="6"/><path d="M22 22c8 8 10 13 10 20M42 22c-8 8-10 13-10 20"/>`, globe:`<circle cx="32" cy="32" r="24"/><path d="M8 32h48M32 8c8 8 8 40 0 48M32 8c-8 8-8 40 0 48"/>`,
+cart:`<circle cx="24" cy="51" r="4"/><circle cx="47" cy="51" r="4"/><path d="M8 12h8l7 28h27l6-20H21"/>`, bank:`<path d="M8 25h48L32 10 8 25zM14 25v25M26 25v25M38 25v25M50 25v25M10 50h44"/>`, box:`<path d="M12 22l20-11 20 11v24L32 57 12 46V22zM12 22l20 11 20-11M32 33v24"/>`, truck:`<path d="M7 20h32v24H7zM39 29h10l8 8v7H39z"/><circle cx="19" cy="49" r="5"/><circle cx="48" cy="49" r="5"/>`, factory:`<path d="M8 52V25l14 9V24l14 10V16h18v36H8zM15 43h8M30 43h8M45 43h6"/>`}; return `<svg class="icon" ${common}>${p[name]||p.grid}</svg>`}
+function chrome(content,progress=''){const hubLabel=state.lang==='es'?'‹ Volver al Hub':'‹ Back to Hub'; app.innerHTML=`<div class="topbar"><div class="brand"><div class="word">CISCO</div><div class="stage">AI Bridge · Infrastructure</div></div><div class="topbarRight"><button class="hub tap" data-action="hub" title="${hubLabel}">${hubLabel}</button><button class="lang tap" data-action="lang">${ui('lang_label')}</button></div></div>${progress}<section class="screen ${state.screen==='attract'?'hero':''}">${content}</section><div class="footer">${ui('footer')}</div>`}
+function progress(){if(state.screen==='attract')return'';const steps=['path','industry','usecase','result'];return`<div class="progress">${steps.map(s=>`<span class="${s===state.screen?'on':''}">${s==='path'?'Path':s==='industry'?'Industry':s==='usecase'?'Use case':'Result'}</span>`).join('<b>›</b>')}</div>`}
+function titleBlock(title){return`<div class="titleBlock"><div class="eyebrow">${esc(BOOTH_DATA.meta.event)}</div><h2 class="pageTitle">${esc(title)}</h2></div>`}
+function render(){document.documentElement.lang=state.lang; const r={attract, path, industry, usecase, result}[state.screen]; r();}
+function attract(){chrome(`<div class="kicker">${ui('attract_kicker')}</div><h1>${ui('attract_title')}</h1><p class="subtitle">${ui('attract_sub')}</p><div class="ctaRow"><button class="cta tap" data-action="start">${ui('attract_cta')}</button><button class="ghost tap" data-action="pillars">${ui('btn_explore_pillars')}</button></div>`)}
+function path(){chrome(`${titleBlock(ui('path_title'))}<div class="grid two"><article class="card pathCard tap" style="--accent:#16BDEB;--i:0" data-action="path" data-path="experienced"><div class="icon">${icon('radar')}</div><h2>${ui('path_exp_title')}</h2><p>${ui('path_exp_desc')}</p><div class="num">01</div></article><article class="card pathCard tap" style="--accent:#FF007F;--i:1" data-action="path" data-path="new"><div class="icon">${icon('eye')}</div><h2>${ui('path_new_title')}</h2><p>${ui('path_new_desc')}</p><div class="num">02</div></article></div><div class="actions"><button class="btn" data-action="pillars">${ui('btn_explore_pillars')}</button></div>`,progress())}
+function industry(){const cards=Object.entries(BOOTH_DATA.industries).map(([id,ind],i)=>`<article class="card industryCard tap" style="--accent:${accents[i]};--i:${i}" data-action="industry" data-id="${id}">${icon(ind.icon)}<h3>${t(ind.name)}</h3><p>${t(ind.tagline)}</p></article>`).join(''); chrome(`${titleBlock(ui('industry_title'))}<div class="grid five">${cards}</div><div class="actions"><button class="btn" data-action="back">${ui('btn_back')}</button></div>`,progress())}
+function usecase(){const ind=BOOTH_DATA.industries[state.industry];const cards=ind.useCases.map((uc,i)=>`<article class="card usecaseCard tap" style="--accent:${accents[i%accents.length]};--i:${i}" data-action="usecase" data-id="${uc.id}"><h3>${t(uc.title)}</h3><p>${t(uc.desc)}</p></article>`).join('');chrome(`${titleBlock(state.path==='experienced'?ui('usecase_title'):ui('usecase_title_new'))}<div class="grid cards">${cards}</div><div class="actions"><button class="btn" data-action="back">${ui('btn_back')}</button></div>`,progress())}
+function result(){const ind=BOOTH_DATA.industries[state.industry], uc=ind.useCases.find(u=>u.id===state.useCase); const pillars=uc.pillars.map(id=>{const p=BOOTH_DATA.pillars[id];return`<div class="chip" style="--pc:${p.color}" title="${esc(t(p.short))}">${icon(p.icon)}<div><b>${t(p.name)}</b><small>${t(p.short)}</small></div></div>`}).join(''); const products=uc.products.map(p=>`<span class="badge">${esc(p)}</span>`).join(''); const booths=uc.booths.map(id=>{const b=BOOTH_DATA.booths[id];return`<article class="booth"><h3>${t(b.name)}</h3><p>${t(b.focus)}</p><div class="badges">${b.products.map(p=>`<span class="badge">${esc(p)}</span>`).join('')}</div></article>`}).join(''); chrome(`<div class="result"><div class="resultHero"><div class="resultHeader"><div class="eyebrow">${t(ind.name)} · ${t(ind.tagline)}</div><h2>${t(uc.title)}</h2><p>${t(uc.desc)}</p></div><div class="callout"><h3 class="sectionTitle">${ui('result_challenge')}</h3><p>${t(uc.securityChallenge)}</p></div></div><div class="resultGrid"><section class="panel"><h3 class="sectionTitle">${ui('result_pillars')}</h3><div class="pillars">${pillars}</div></section><section class="panel reco"><h3 class="sectionTitle">${ui('result_reco')}</h3><p>${t(uc.recommendation)}</p></section><section class="panel"><h3 class="sectionTitle">${ui('result_products')}</h3><div class="badges">${products}</div></section><section class="panel booths"><h3 class="sectionTitle">${ui('result_booths')}</h3><div class="boothGrid">${booths}</div></section></div><div class="actions"><button class="btn" data-action="back">${ui('btn_back')}</button><button class="btn primary" data-action="restart">${ui('btn_restart')}</button></div></div>`,progress())}
+function pillarGrid(){const cards=Object.entries(BOOTH_DATA.pillars).map(([id,p],i)=>`<article class="pillarCard tap" tabindex="0" role="button" aria-label="${esc(t(p.name))}" style="--pc:${p.color};--i:${i}" data-action="pillar-detail" data-id="${id}">${icon(p.icon)}<h3>${t(p.name)}</h3><p>${t(p.short)}</p><span class="chev" aria-hidden="true">›</span></article>`).join(''); return `<div class="overlayTop"><div><h2 class="pageTitle">${ui('pillars_title')}</h2><p class="pillarsHint">${ui('pillars_hint')}</p></div><button class="close" data-action="close">×</button></div><div class="pillarGrid">${cards}</div>`}
+function pillarDetail(){const p=BOOTH_DATA.pillars[state.pillar]||Object.values(BOOTH_DATA.pillars)[0]; const products=(p.products||[]).map((prod,i)=>`<article class="pillarProduct" style="--i:${i}"><strong class="productName">${esc(prod.name)}</strong><span class="whyLabel">${ui('pillar_why')}</span><p>${esc(t(prod.why))}</p></article>`).join(''); return `<div class="overlayTop"><button class="btn pillarBack" data-action="pillar-grid">‹ ${ui('pillar_back')}</button><button class="close" data-action="close">×</button></div><section class="pillarDetail" style="--pc:${p.color}"><div class="pillarDetailHead">${icon(p.icon)}<div><div class="eyebrow">${esc(p.key)}</div><h3>${t(p.name)}</h3></div></div><p class="pillarLead">${t(p.short)}</p><h3 class="sectionTitle">${ui('pillar_products')}</h3><div class="pillarProducts">${products}</div></section>`}
+function showPillars(){overlay.className='overlay open'; overlay.setAttribute('aria-hidden','false'); overlay.innerHTML=`<div class="overlayBox">${state.pillar?pillarDetail():pillarGrid()}</div>`}
+function hidePillars(){state.pillar=null; overlay.className='overlay'; overlay.setAttribute('aria-hidden','true')}
+function back(){if(state.screen==='result'){state.screen='usecase';state.useCase=null}else if(state.screen==='usecase'){state.screen='industry';state.industry=null}else if(state.screen==='industry'){state.screen='path';state.path=null}else state.screen='attract';render()}
+document.addEventListener('click',e=>{resetIdle(); const el=e.target.closest('[data-action]'); if(!el)return; const a=el.dataset.action; if(a==='hub'){goHub();return} if(a==='lang'){state.lang=state.lang==='es'?'en':'es'; persistLang(); render(); if(overlay.classList.contains('open'))showPillars()} if(a==='start'){state.screen='path';render()} if(a==='path'){state.path=el.dataset.path;state.screen='industry';render()} if(a==='industry'){state.industry=el.dataset.id;state.screen='usecase';render()} if(a==='usecase'){state.useCase=el.dataset.id;state.screen='result';render()} if(a==='back')back(); if(a==='restart'){state.screen='attract';state.path=state.industry=state.useCase=null;render()} if(a==='pillars'){state.pillar=null;showPillars()} if(a==='pillar-detail'){state.pillar=el.dataset.id;showPillars()} if(a==='pillar-grid'){state.pillar=null;showPillars()} if(a==='close')hidePillars();});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches('[data-action="pillar-detail"]')){e.preventDefault();e.target.click()}});
+let idle; function resetIdle(){clearTimeout(idle); idle=setTimeout(()=>{goHub()},90000)} ['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev,resetIdle,{passive:true}));
+function initCanvas(){const c=document.getElementById('network'),ctx=c.getContext('2d');let w,h,dpr,pts=[];function resize(){dpr=Math.min(devicePixelRatio||1,2);w=c.width=innerWidth*dpr;h=c.height=innerHeight*dpr;c.style.width=innerWidth+'px';c.style.height=innerHeight+'px';pts=Array.from({length:Math.min(90,Math.floor(innerWidth/18))},()=>({x:Math.random()*w,y:Math.random()*h,vx:(Math.random()-.5)*.34*dpr,vy:(Math.random()-.5)*.34*dpr,r:(Math.random()*2+1)*dpr}))}function tick(){ctx.clearRect(0,0,w,h);for(const p of pts){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>w)p.vx*=-1;if(p.y<0||p.y>h)p.vy*=-1}for(let i=0;i<pts.length;i++){for(let j=i+1;j<pts.length;j++){const a=pts[i],b=pts[j],dx=a.x-b.x,dy=a.y-b.y,dist=Math.hypot(dx,dy);if(dist<165*dpr){ctx.globalAlpha=(1-dist/(165*dpr))*.42;ctx.strokeStyle='#16BDEB';ctx.lineWidth=1*dpr;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}}}for(const p of pts){ctx.globalAlpha=.75;ctx.fillStyle=Math.random()>.5?'#16BDEB':'#3070E7';ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()}requestAnimationFrame(tick)}addEventListener('resize',resize);resize();tick()}
+initCanvas(); render(); resetIdle();
+  </script>
+</body>
+</html>
